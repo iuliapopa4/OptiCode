@@ -1,0 +1,77 @@
+.codeEditorContainer {
+  margin-top: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+
+.submitBtn {
+  padding: 10px 20px;
+  background-color: #5cb860;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: block;
+  margin: 20px auto;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.submitBtn:hover {
+  background-color: #4CAF50;
+}
+
+.submitBtn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #f44336;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.ace_editor {
+  border-radius: 5px;
+  margin-bottom: 20px; 
+}
+
+.output-message {
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.output-success {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.output-error {
+  background-color: #f44336;
+  color: #fff;
+}
+
+
+.languageSelector {
+  margin-bottom: 20px;
+}
+
+.languageSelector select {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.languageSelector select:focus {
+  outline: none;
+  border-color: #007bff;
+}

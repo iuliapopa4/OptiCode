@@ -1,0 +1,49 @@
+
+.profile-layout {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  margin-top:70px;
+}
+
+.content-layout {
+  display: flex;
+  flex: 1;
+}
+
+.profile-container {
+  width: 30%;
+  padding: 20px;
+  height: 100%; 
+}
+
+.info-container {
+  width: 70%;
+  background-color: transparent;
+  padding: 20px;
+  height: 100%; 
+  border-radius: 5px;
+  margin: 0 0 2em 0;
+}
+
+
+.btn {
+  margin: 1em 0;
+  font-size: 16px;
+  padding: 1.2em;
+  border-radius: 5px;
+  border: none;
+  width: 370px;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #6899c8, #4979a7);
+}
+
+.btn:hover {
+  transition: all 0.3s ease;
+  background: linear-gradient(to left, #6899c8, #4979a7);
+}

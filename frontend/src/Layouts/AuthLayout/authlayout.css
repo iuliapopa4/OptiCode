@@ -1,0 +1,32 @@
+.authlayout {
+    height: 100vh;
+    background: #dbdbdb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .authlayout_logo {
+    border-radius: 50%;
+  }
+  
+  .authlayout_logo img {
+    max-width: 150px;
+  }
+  
+  .authlayout_actions {
+    display: flex;
+    justify-content: space-between;
+    max-width: 370px;
+    width: 100%;
+    font-size: 14px;
+  }
+  
+  .authlayout_actions p {
+    text-transform: capitalize;
+    font-weight: 300;
+  }
+  
+
+  

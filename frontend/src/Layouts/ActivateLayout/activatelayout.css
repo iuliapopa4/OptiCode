@@ -1,0 +1,18 @@
+.activate {
+    height: 100vh;
+    background: #dbdbdb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .activate p {
+    font-size: 1.5rem;
+    color: #6899c8;
+  }
+  
+  .activate p span {
+    cursor: pointer;
+    color: #6899c8;
+  }

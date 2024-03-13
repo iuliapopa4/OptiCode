@@ -1,0 +1,68 @@
+.input {
+    margin: 1.5em 0;
+  }
+  
+  .input label {
+    position: relative;
+    font-size: 1rem;
+  }
+  
+  .input label input {
+    background-color: #f2f2f2;
+    padding: 1em;
+    border-radius: 5px;
+    width: 370px;
+    outline: none;
+    font-size: 1rem;
+    border: none;
+  }
+  
+  .input label input:not(:placeholder-shown) + span {
+    top: -20px;
+    font-size: 10px;
+    color: #848484;
+  }
+  
+
+  .input label span {
+    position: absolute;
+    top: 40%;
+    left: 7px;
+    transform: translate(0, -50%);
+    color: #848484;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+  }
+  
+  .input label input:focus + span {
+    top: -20px;
+    font-size: 10px;
+    color: #848484;
+  }
+  
+  .input label .input_icon {
+    color: #1d1927;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(92%, -50%);
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .toast-failed {
+    background: #C52919 !important;
+    color: #fff;
+  }
+  
+  .toast-success {
+    background: #6899c8 !important;
+    color: #fff;
+  }
+  
+  @media (min-width: 1200px) {
+    .input label input {
+      width: 370px;
+    }
+  }
+  

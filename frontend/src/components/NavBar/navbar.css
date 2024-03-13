@@ -1,0 +1,81 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  background-color: #5a82a8; 
+  color: #FFFFFF;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar__left, .navbar__right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo img {
+  width: 45px; 
+  cursor: pointer;
+}
+
+.navbar__logo, .navbar__problems, .navbar__streaks, .navbar__avatar {
+  margin: 0 1rem;
+}
+
+.navbar__search input {
+  padding: 8px 16px;
+  font-size: 16px;
+  border: 1px solid #DDD; 
+  border-radius: 20px; 
+  background-color: #f8f8f8; 
+  color: #333;
+}
+
+.navbar__streaks {
+  font-weight: bold; 
+}
+
+.navbar__avatar img {
+  width: 40px; 
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.avatar-dropdown {
+  position: absolute;
+  top: 58px; 
+  right: 20px;
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+  padding: 0.5rem 0; 
+}
+
+.avatar-dropdown ul {
+  list-style: none;
+}
+
+.avatar-dropdown li {
+  padding: 10px 20px;
+  cursor: pointer;
+  color: #5a82a8; 
+}
+
+.avatar-dropdown li:hover {
+  background-color: #E1E1E1; 
+}
+
+.navbar__problems, .navbar__streaks, .navbar__avatar {
+  color: #FFFFFF; 
+  cursor: pointer;
+}
+
+.navbar__problems:hover, .navbar__streaks:hover {
+  text-decoration: underline; 
+}

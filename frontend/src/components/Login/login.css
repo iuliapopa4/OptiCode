@@ -1,0 +1,40 @@
+.login_btn {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .login_btn button {
+    margin: 1em 0;
+    font-size: 16px;
+    padding: 1.2em;
+    border-radius: 5px;
+    border: none;
+    width: 370px;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #6899c8, #4979a7);
+  }
+  
+  .login_btn button svg {
+    margin-left: 10px;
+  }
+  
+  .login_btn button:hover {
+    transition: all 0.3s ease;
+    background: linear-gradient(to left, #6899c8, #4979a7);
+  }
+  
+  .login_btn .btn-alt {
+    background: #cbcbcb;
+    color: black;
+  }
+  
+  .login_btn .btn-alt:hover {
+    transition: all 0.3s ease;
+    background: #bebebe;
+  }
+  
