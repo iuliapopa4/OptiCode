@@ -33,29 +33,31 @@ const ProblemPage = () => {
   return (
     <div>
       <NavBar />
-    <div className="problem"> 
-      {problem ? (
-        <div>
-          <h1>{problem.title}</h1>
-          <p>{problem.statement}</p>
-          <p><strong>Input Format:</strong> {problem.inputFormat}</p>
-          <p><strong>Output Format:</strong> {problem.outputFormat}</p>
-          <h2>Examples:</h2>
-          <ul>
-            {problem.examples.map((example, index) => (
-              <li key={index}>
-                <p><strong>Input:</strong> {example.input}</p>
-                <p><strong>Output:</strong> {example.output}</p>
-              </li>
-            ))}
-          </ul>
-          <CodeEditor problemId={problemId} />
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+      <div className="problem"> 
+        {problem ? (
+          <div>
+            <div className="divider"></div>
+            <h1>{problem.title}</h1>
+            <p>{problem.statement}</p>
+            <p><strong>Input Format:</strong> {problem.inputFormat}</p>
+            <p><strong>Output Format:</strong> {problem.outputFormat}</p>
+            <h2>Example:</h2>
+            {problem.examples.length > 0 && (
+              <ul>
+                <li>
+                  <p><strong>Input:</strong> {problem.examples[0].input}</p>
+                  <p><strong>Output:</strong> {problem.examples[0].output}</p>
+                </li>
+              </ul>
+            )}
+            <CodeEditor problemId={problem.id} testCases={problem.examples} />
+          </div>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
     </div>
-    </div>
+
 
   );
 };

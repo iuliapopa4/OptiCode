@@ -1,109 +1,82 @@
 const Problem = require('../models/problemModel');
 
 const problemController = {
-createProblem: async (req, res) => {
-    const { title, statement, inputFormat, outputFormat, constraints, examples, difficulty, solution } = req.body;
+  createProblem: async (req, res) => {
+    const { id, title, statement, inputFormat, outputFormat, constraints, examples, difficulty, solution, timeLimit, memoryLimit, hints } = req.body;
+    
     try {
-      const newProblem = await Problem.create({
-        title,
-        statement,
-        inputFormat,
-        outputFormat,
-        constraints,
-        examples,
-        difficulty,
-        solution,
-      });
-      res.status(201).json(newProblem);
+        const newProblem = await Problem.create({
+            id, title, statement, inputFormat, outputFormat, constraints, examples, difficulty, solution, timeLimit, memoryLimit, hints
+        });
+        res.status(201).json(newProblem);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
-  },
+},
 
-getAllProblems: async (req, res) => {
+
+  getAllProblems: async (req, res) => {
     try {
-      const problems = await Problem.find();
+      const problems = await Problem.find({});
       res.json(problems);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
 
-getProblemById: async (req, res) => {
-    const { id } = req.params; 
+  getProblemById: async (req, res) => {
     try {
-        const problem = await Problem.findById(id); 
-        if (!problem) {
-            return res.status(404).json({ error: 'Problem not found' });
-        }
-        res.json(problem);
+      const problem = await Problem.findOne({ id: req.params.id });
+      if (!problem) {
+        return res.status(404).json({ error: 'Problem not found' });
+      }
+      res.json(problem);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
-},
-updateProblemById: async (req, res) => {
-    const { id } = req.params;
-    const { title, statement, inputFormat, outputFormat, constraints, examples, difficulty, solution } = req.body;
+  },
+  getProblemExamplesById: async (req, res) => {
     try {
-      const updatedProblem = await Problem.findByIdAndUpdate(
-        id,
-        {
-          title,
-          statement,
-          inputFormat,
-          outputFormat,
-          constraints,
-          examples,
-          difficulty,
-          solution,
-        },
-        { new: true }
-      );
+      const { id } = req.params;
+      const problem = await Problem.findById(id);
+      if (!problem) {
+        return res.status(404).json({ error: 'Problem not found' });
+      }
+      const examples = problem.examples;
+      res.json(examples);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
+    }
+  },
+  
+
+  updateProblemById: async (req, res) => {
+    try {
+      const updatedProblem = await Problem.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
       if (!updatedProblem) {
         return res.status(404).json({ error: 'Problem not found' });
       }
       res.json(updatedProblem);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
 
-deleteProblemById: async (req, res) => {
-    const { id } = req.params;
+  deleteProblemById: async (req, res) => {
     try {
-      const deletedProblem = await Problem.findByIdAndDelete(id);
+      const deletedProblem = await Problem.findOneAndDelete({ id: req.params.id });
       if (!deletedProblem) {
         return res.status(404).json({ error: 'Problem not found' });
       }
       res.json({ message: 'Problem deleted successfully' });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  },
-  getTestInputById: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const problem = await Problem.findById(id);
-      if (!problem) {
-        return res.status(404).json({ error: 'Problem not found' });
-      }
-
-      // Extract the first test input from the examples array
-      const firstTestInput = problem.examples[0]?.input;
-
-      if (!firstTestInput) {
-        return res.status(404).json({ error: 'Test input not found for the problem' });
-      }
-
-      res.json({ testInput: firstTestInput });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
 };

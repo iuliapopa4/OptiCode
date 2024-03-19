@@ -1,62 +1,55 @@
 const express = require('express');
-const router = express.Router();
-const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const { compileCode } = require('./compileCode');
+const { executeBinary } = require('./executeBinary');
 
+const router = express.Router();
 const submissionsDir = path.join(__dirname, 'submissions');
-if (!fs.existsSync(submissionsDir)) {
-    fs.mkdirSync(submissionsDir, { recursive: true });
-}
+if (!fs.existsSync(submissionsDir)) fs.mkdirSync(submissionsDir, { recursive: true });
 
-router.post('/compile', (req, res) => {
-    const { code, language } = req.body;
+router.post('/compile', async (req, res) => {
+    const { code, language, testCases = [] } = req.body;
+
     if (!code || !language) {
         return res.status(400).json({ error: 'Code or language not provided' });
     }
 
     const filename = uuidv4();
-    const extensionMap = {
-        'python': '.py',
-        'c': '.c',
-        'cpp': '.cpp'
-    };
-    const filepath = path.join(submissionsDir, `${filename}${extensionMap[language] || '.txt'}`);
+    const sourcePath = path.join(submissionsDir, `${filename}.${language}`);
 
     try {
-        fs.writeFileSync(filepath, code);
-        console.log(`File written successfully to: ${filepath}`);
+        fs.writeFileSync(sourcePath, code);
+        const executablePath = await compileCode(sourcePath, language);
+
+        console.log('Starting test case execution...');
+        const results = await Promise.all(testCases.map(async (testCase, index) => {
+            const output = await executeBinary(executablePath, testCase.input);
+            // Trim both expected and actual outputs to ensure consistent comparison
+            const passed = output.trim() === testCase.output.trim();
+        
+            console.log(`Test Case ${index + 1}: Input: ${testCase.input}`);
+            console.log(`Test Case ${index + 1}: Expected Output: ${testCase.output}`);
+            console.log(`Test Case ${index + 1}: Actual Output: ${output}`);
+            console.log(`Test Case ${index + 1}: Passed: ${passed}`);
+        
+            return { 
+                input: testCase.input, 
+                expectedOutput: testCase.output, 
+                actualOutput: output, 
+                passed 
+            };
+        }));
+        
+        console.log(results);   
+
+        res.json({ results });
     } catch (error) {
-        console.error('Error writing file:', error);
-        return res.status(500).json({ error: "Failed to create source file." });
+        console.error('Error in processing the request:', error);
+        res.status(500).json({ success: false, error: error.error || "Compilation failed. Please check your code and try again." });
     }
-
-    let command;
-    switch(language) {
-        case 'python':
-            command = `python "${filepath}"`;
-            break;
-        case 'c':
-            command = `gcc "${filepath}" -o "${filepath}.exe" && "${filepath}.exe"`;
-            break;
-        case 'cpp':
-            command = `g++ "${filepath}" -o "${filepath}.exe" && "${filepath}.exe"`;
-            break;
-        default:
-            return res.status(400).json({ error: "Unsupported language" });
-    }
-
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Compilation error: ${error}`);
-            return res.status(500).json({ error: stderr });
-        } else {
-            console.log("Compilation successful");
-            res.json({ message: "Compilation successful", output: stdout });
-        }
-
-    });
 });
+
 
 module.exports = router;

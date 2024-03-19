@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const problemSchema = new mongoose.Schema({
-  id :{
+  id: {
     type: Number,
     required: true,
   },
@@ -24,13 +24,22 @@ const problemSchema = new mongoose.Schema({
   ],
   difficulty: {
     type: String,
-    enum: ['easy', 'medium', 'hard'],
-    default: 'medium',
+    enum: ['easy', 'medium', 'difficult'],
+    required: true,
   },
   solution: {
     type: String,
     required: true,
   },
+  timeLimit: {
+    type: Number,
+    required: true,
+  },
+  memoryLimit: {
+    type: Number, 
+    required: true,
+  },
+  hints: [String],
 });
 
 const Problem = mongoose.model('Problem', problemSchema);

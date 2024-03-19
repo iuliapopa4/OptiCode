@@ -47,18 +47,23 @@ const Navbar = () => {
         <img src={require("../../img/logo.png")} alt="logo" />
 
         </div>
-        <div className="navbar__search">
+        {/* <div className="navbar__search">
           <input type="text" placeholder="Search" />
-        </div>
+        </div> */}
         <div className="navbar__problems" onClick={goProblems}>
         Problems
       </div>
+      <div className="navbar__problems" >
+        Leaderboard
+      </div>
       </div>
       <div className="navbar__right">
-        <div className="navbar__streaks">
-          <SiFireship className="streak-icon" />
-          <span className="streak-count">{user && user.streaks}</span>
-        </div>
+      <div className="navbar__streaks">
+        <SiFireship className="streak-icon" />
+        <span className="streak-count">{user && user.streaks}</span>
+        <span className="tooltip-text">Your consecutive days of coding</span>
+      </div>
+
         <div className="navbar__avatar" onClick={toggleAvatarDropdown}>
           {user && <Avatar imageUrl={user.avatar} />}
           {isAvatarDropdownOpen && (

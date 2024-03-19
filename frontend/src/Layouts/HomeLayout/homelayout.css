@@ -25,35 +25,34 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap; /* Allows items to wrap in smaller screens */
-  text-align: center; /* Centers the text within each feature */
-  padding: 50px 20px; /* Add padding for spacing around */
-  gap: 20px; /* Creates space between the flex items */
+  flex-wrap: wrap; 
+  text-align: center; 
+  padding: 50px 20px; 
+  gap: 20px; 
 }
 
 .feature {
-  max-width: 300px; /* Maximum width of each feature */
-  padding: 20px; /* Adds padding inside each feature for spacing */
-  border-radius: 8px; /* Optional: Rounds the corners */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: Adds a subtle shadow */
+  max-width: 300px; 
+  padding: 20px; 
+  border-radius: 8px; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
 }
 
 .feature h2 {
-  margin-bottom: 15px; /* Adds space below the heading */
+  margin-bottom: 15px; 
 }
 
-/* Optional: Adds hover effect to each feature for interactivity */
 .feature:hover {
-  transform: translateY(-5px); /* Slightly raises the feature */
-  transition: transform 0.3s ease-in-out; /* Smooth transition for the hover effect */
+  transform: translateY(-5px); 
+  transition: transform 0.3s ease-in-out; 
 }
 
 
 .start {
   padding: 10px 20px;
   border: none;
-  border-radius: 20px; /* Rounded edges for button */
-  background-color: #6899c8; /* Primary color for your theme */
+  border-radius: 20px; 
+  background-color: #6899c8; 
   color: #fff;
   font-size: 16px;
   cursor: pointer;
@@ -62,5 +61,5 @@
 }
 
 .start:hover {
-  background-color: #5a82a8; /* Darker shade on hover */
+  background-color: #5a82a8; 
 }

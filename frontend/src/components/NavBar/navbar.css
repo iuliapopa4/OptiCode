@@ -21,6 +21,7 @@
 .navbar__logo img {
   width: 45px; 
   cursor: pointer;
+  padding:2px;
 }
 
 .navbar__logo, .navbar__problems, .navbar__streaks, .navbar__avatar {
@@ -37,7 +38,41 @@
 }
 
 .navbar__streaks {
-  font-weight: bold; 
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -100px; 
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.navbar__streaks:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%; 
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #555 transparent;
 }
 
 .navbar__avatar img {
@@ -45,6 +80,7 @@
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
+  padding:2px;
 }
 
 .avatar-dropdown {

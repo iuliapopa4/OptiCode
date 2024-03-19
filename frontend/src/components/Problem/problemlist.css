@@ -1,23 +1,58 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
-    line-height: 1.6;
-    padding: 0;
-    margin: 0;
-}
-
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-li {
-    margin-bottom: 1em;
-}
-
-.problem {
+.filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee; 
+    margin-bottom: 20px;
+    margin-top:20px;
+  }
+  
+  .filters input[type="text"] {
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+    width: 50%; 
+    max-width: 300px; 
+  }
+  
+  .filters select {
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+    cursor: pointer;
+    width: auto; 
+    background-color: #f8f8f8; 
+  }
+  
+  .filters input[type="text"]:hover,
+  .filters select:hover,
+  .filters input[type="text"]:focus,
+  .filters select:focus {
+    border-color: #6899c8; 
+    box-shadow: 0 0 8px rgba(104, 153, 200, 0.2); 
+  }
+  
+  @media (max-width: 768px) {
+    .filters {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .filters input[type="text"],
+    .filters select {
+      width: 100%; 
+      margin-bottom: 10px; 
+    }
+  
+    .filters select {
+      align-self: stretch; 
+    }
+  }
+  
+  .problem {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -25,52 +60,61 @@ li {
     margin: 20px auto;
     width: 80%;
     max-width: 960px;
-}
-
-.problem-info {
+  }
+  
+  .problem-info {
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.problem-info:hover {
+  }
+  
+  .problem-info:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-h3 {
+  }
+  
+  h3 {
     margin-top: 0;
     color: #333;
-}
-
-.problem-info p {
+  }
+  
+  .problem-info p {
     margin: 10px 0;
     line-height: 1.4;
-}
-
-.difficulty-easy {
+  }
+  
+  .difficulty-easy {
     color: #28a745;
     font-weight: bold;
-}
-
-.difficulty-medium {
+  }
+  
+  .difficulty-medium {
     color: #ffc107;
     font-weight: bold;
-
-}
-
-.difficulty-hard {
+  }
+  
+  .difficulty-difficult {
     color: #dc3545;
     font-weight: bold;
-
-}
-
-a {
+  }
+  
+  a {
     text-decoration: none;
-    color: inherit; 
-}
-
-a:hover {
+    color: inherit;
+  }
+  
+  a:hover {
     text-decoration: underline;
-}
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  

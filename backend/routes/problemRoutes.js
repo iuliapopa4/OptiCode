@@ -8,6 +8,7 @@ router.get('/getProblems',problemController.getAllProblems);
 router.get('/getProblem/:id',problemController.getProblemById);
 router.put('/updateProblem/:id', problemController.updateProblemById);
 router.delete('/deleteProblem/:id',problemController.deleteProblemById);
+router.get('/problems/:id/examples', problemController.getProblemExamplesById);
 
 router.post('/submitCode', submissionController.submitCode);
 
