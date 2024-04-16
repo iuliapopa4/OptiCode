@@ -7,22 +7,22 @@ import { AuthContext } from '../../context/AuthContext';
 import Output from './Output'; 
 import "./CodeEditor.css";
 
-const CodeEditor = ({ problemId, testCases }) => {
+const CodeEditor = ({ problemId, testCases, userId }) => {
   const languageTemplates = {
     cpp: `#include <iostream>
-    using namespace std;
+using namespace std;
 
-    int main() {
-      cout << "Hello, C++!" << endl;
-      return 0;
-    }
+int main() {
+    cout << "Hello, C++!" << endl;
+    return 0;
+}
     `,
         c: `#include <stdio.h>
 
-    int main() {
-      printf("Hello, C!\\n");
-      return 0;
-    }
+int main() {
+  printf("Hello, C!\\n");
+  return 0;
+ }
     `,
       };
 
@@ -33,6 +33,8 @@ const CodeEditor = ({ problemId, testCases }) => {
   const [isError, setIsError] = useState(false);
   const [language, setLanguage] = useState('cpp');
   const [editorContent, setEditorContent] = useState(languageTemplates[language]); 
+
+  // Update editor content when language changes
   useEffect(() => {
     setEditorContent(languageTemplates[language]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,24 +51,36 @@ const CodeEditor = ({ problemId, testCases }) => {
     setError('');
     setOutput('');
     setIsError(false);
-
+  
     try {
-      const response = await axios.post('/api/compile', {
+      // Compile and test the code
+      const compileResponse = await axios.post('/api/compile', {
         code: editorContent,
         language,
         problemId,
         testCases
       }, { headers: { Authorization: `Bearer ${token}` }});
-
-      if (response.data.success === false) {
-        setError(response.data.error);
+  
+      if (compileResponse.data.success === false) {
+        setError(compileResponse.data.error);
         setIsError(true);
-      } else if (response.data.results) {
-        const passedTests = response.data.results.filter(result => result.passed).length;
-        const totalTests = response.data.results.length;
+      } else if (compileResponse.data.results) {
+        const passedTests = compileResponse.data.results.filter(result => result.passed).length;
+        const totalTests = compileResponse.data.results.length;
         const score = ((passedTests / totalTests) * 100).toFixed(2);
         setOutput(`Score: ${score}%`);
         setIsError(false);
+  
+        const submissionResponse = await axios.post(`/api/submitCode/${problemId}`, {
+          userId, 
+          code: editorContent,
+          language,
+          result: `Score: ${score}%`, 
+          testCasesPassed: passedTests,
+          totalTestCases: totalTests
+        }, { headers: { Authorization: `${token}` }});
+  
+        console.log('Submission saved:', submissionResponse.data);
       } else {
         setError("Compilation successful, but no test results are available.");
         setIsError(true);
@@ -79,6 +93,7 @@ const CodeEditor = ({ problemId, testCases }) => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="codeEditorContainer">

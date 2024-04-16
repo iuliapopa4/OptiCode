@@ -10,8 +10,10 @@ const INITIAL_STATE = {
 export const AuthContext = createContext(INITIAL_STATE);
 
 export const AuthContextProvider = ({ children }) => {
+  // Use reducer to manage state with AuthReducer
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
 
+  // Check for token in local storage 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {

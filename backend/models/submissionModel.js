@@ -1,15 +1,38 @@
 const mongoose = require('mongoose');
 
 const submissionSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  problemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Problem', required: true },
-  code: { type: String, required: true },
-  language: { type: String, required: true },
-  result: { type: String, enum: ['accepted', 'wrong answer', 'runtime error', 'time limit exceeded'], required: true },
-  score: { type: Number, default: 0 },
-  feedback: { type: String },
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
+  },
+  problemId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Problem' 
+  },
+  language: { 
+    type: String, 
+    required: true 
+  },
+  code: { 
+    type: String, 
+    required: true 
+  },
+  result: { 
+    type: String, 
+    required: true 
+  }, 
+  testCasesPassed: { 
+    type: Number, 
+    required: true 
+  },
+  totalTestCases: { 
+    type: Number, 
+    required: true 
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  }
 });
 
-const Submission = mongoose.model('Submission', submissionSchema);
-
-module.exports = Submission;
+module.exports = mongoose.model('Submission', submissionSchema);

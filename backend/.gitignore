@@ -1,4 +1,4 @@
+/helpers/submissions
 node_modules
 .env
-/helpers/submissions
-/uploads
+uploads/

@@ -45,11 +45,7 @@ const Navbar = () => {
       <div className="navbar__left">
         <div className="navbar__logo" onClick={goHome}>
         <img src={require("../../img/logo.png")} alt="logo" />
-
         </div>
-        {/* <div className="navbar__search">
-          <input type="text" placeholder="Search" />
-        </div> */}
         <div className="navbar__problems" onClick={goProblems}>
         Problems
       </div>

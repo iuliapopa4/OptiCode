@@ -1,5 +1,6 @@
 const cloudinary = require("cloudinary");
 const fs = require("fs");
+
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
@@ -9,24 +10,23 @@ cloudinary.config({
 const uploadController = {
   uploadAvar: async (req, res) => {
     try {
-      // get file
       const file = req.file;
 
-      // upload to cloudinary
+      // Upload the file to Cloudinary 
       cloudinary.v2.uploader.upload(
         file.path,
         {
-          folder: "avatar",
-          width: 150,
+          folder: "avatar",  
+          width: 150,        
           height: 150,
-          crop: "fill",
+          crop: "fill"      
         },
         (err, result) => {
-          if (err) throw err;
-          fs.unlinkSync(file.path);
+          if (err) throw err;  
+          fs.unlinkSync(file.path);  
           res.status(200).json({
             msg: "Uploaded successfully.",
-            url: result.secure_url,
+            url: result.secure_url  // Return the URL of the uploaded image
           });
         }
       );

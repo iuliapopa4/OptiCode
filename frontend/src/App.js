@@ -7,12 +7,15 @@ import HomeLayout from "./Layouts/HomeLayout/HomeLayout";
 import ResetLayout from "./Layouts/ResetLayout/ResetLayout";
 import ProblemPage from "./components/Problem/ProblemPage";
 import ProblemList from "./components/Problem/ProblemList";
+import Submission from "./components/Problem/Submission";
+import Forgot from "./components/Forgot/Forgot";
 import { AuthContext } from "./context/AuthContext";
 import axios from "axios";
 
 function App() {
   const { dispatch, token, isLoggedIn } = useContext(AuthContext);
 
+  // fetch access token
   useEffect(() => {
     const _appSignging = localStorage.getItem("_appSignging");
     if (_appSignging) {
@@ -24,6 +27,7 @@ function App() {
     }
   }, [dispatch, isLoggedIn]);
 
+  // fetch user data when token changes
   useEffect(() => {
     if (token) {
       const getUser = async () => {
@@ -47,6 +51,8 @@ function App() {
         <Route path="/profile" element={<ProfileLayout />} />
         <Route path="/problems/:id" element={<ProblemPage />} />
         <Route path="/problems" element={<ProblemList />} />
+        <Route path="/submission/:id" element={<Submission/>} />
+        <Route path="/auth/forgot-password" element={<Forgot />} />
       </Routes>
     </Router>
   );

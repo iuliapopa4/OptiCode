@@ -7,30 +7,39 @@ const problemSchema = new mongoose.Schema({
   },
   title: {
     type: String,
-    required: true,
+    required: [true, 'Title is required'],
   },
   statement: {
     type: String,
-    required: true,
+    required: [true, 'Problem statement is required'],
   },
-  inputFormat: String,
-  outputFormat: String,
-  constraints: String,
-  examples: [
-    {
-      input: String,
-      output: String,
-    },
-  ],
+  inputFormat: {
+    type: String,
+    required: [true, 'Input format is required'],
+  },
+  outputFormat: {
+    type: String,
+    required: [true, 'Output format is required'],
+  },
+  constraints: {
+    type: String,
+    required: [true, 'Constraints are required'],
+  },
+  examples: [{
+    input: { type: String, required: [true, 'Example input is required'] },
+    output: { type: String, required: [true, 'Example output is required'] }
+  }],
   difficulty: {
     type: String,
-    enum: ['easy', 'medium', 'difficult'],
+    enum: ['easy', 'medium', 'hard'], 
     required: true,
   },
   solution: {
     type: String,
-    required: true,
+    required: false,
+    default: "" 
   },
+  tags: [{ type: String }], 
   timeLimit: {
     type: Number,
     required: true,
@@ -40,8 +49,14 @@ const problemSchema = new mongoose.Schema({
     required: true,
   },
   hints: [String],
+  createdAt: { 
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: { 
+    type: Date,
+    default: Date.now,
+  }
 });
 
-const Problem = mongoose.model('Problem', problemSchema);
-
-module.exports = Problem;
+module.exports = mongoose.model('Problem', problemSchema);;

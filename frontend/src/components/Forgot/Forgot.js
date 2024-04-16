@@ -48,7 +48,7 @@ const Forgot = () => {
   };
 
   return (
-    <>
+    <div className="forgot">
       <ToastContainer />
       <form onSubmit={handleSubmit}>
         <h2 style={{textAlign:"center",marginBottom:"30px"}}>FORGOT PASSWORD</h2>
@@ -63,7 +63,7 @@ const Forgot = () => {
           <button type="submit">Reset</button>
         </div>
       </form>
-    </>
+      </div>
   );
 };
 

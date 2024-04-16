@@ -9,7 +9,9 @@ import NavBar from "../NavBar/NavBar"
 const ProblemPage = () => {
   const { id: problemId } = useParams();
   const [problem, setProblem] = useState(null);
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
+  const [submissions, setSubmissions] = useState([]);
+  const [showHints, setShowHints] = useState(false); 
 
   useEffect(() => {
     console.log('Fetching problem details...');
@@ -29,6 +31,23 @@ const ProblemPage = () => {
       });
   }, [problemId, token]);
 
+  useEffect(() => {
+    if (!problem || !token || !user._id) {
+      console.log('Waiting for problem details...');
+      return;
+    }
+  
+    axios.get(`/api/submissions/${user._id}/${problem._id}`, { headers: { Authorization: token } })
+      .then(response => {
+        console.log('Submissions fetched:', response.data);
+        setSubmissions(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching submissions:', error);
+      });
+  }, [problem, token, user._id]);
+
+  const toggleHints = () => setShowHints(!showHints); 
   
   return (
     <div>
@@ -50,15 +69,49 @@ const ProblemPage = () => {
                 </li>
               </ul>
             )}
-            <CodeEditor problemId={problem.id} testCases={problem.examples} />
+            {problem.hints && problem.hints.length > 0 && (
+              <div>
+                <button onClick={toggleHints} className="hintsButton">
+                  {showHints ? 'Hide Hints' : 'Reveal Hints'}
+                </button>
+
+                {showHints && (
+                  <ul>
+                    {problem.hints.map((hint, index) => (
+                      <li key={index}>{hint}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+            <CodeEditor problemId={problem._id} testCases={problem.examples} userId={user._id} />
           </div>
         ) : (
           <p>Loading...</p>
         )}
       </div>
+      <div className="submissions-section">
+        <ul>
+          {submissions.map((submission) => {
+            const resultPercentage = parseInt(submission.result.replace('Score: ', '').replace('%', ''));
+            let resultClass = '';
+            if (resultPercentage === 100) {
+              resultClass = 'result-success';
+            } else if (resultPercentage === 0) {
+              resultClass = 'result-fail';
+            } else {
+              resultClass = 'result-partial';
+            }
+
+            return (
+              <li key={submission._id} className={resultClass}>
+                <a href={`/submission/${submission._id}`}>Submission on {new Date(submission.createdAt).toLocaleString()}</a> {submission.result}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
-
-
   );
 };
 

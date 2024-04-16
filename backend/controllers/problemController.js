@@ -2,11 +2,11 @@ const Problem = require('../models/problemModel');
 
 const problemController = {
   createProblem: async (req, res) => {
-    const { id, title, statement, inputFormat, outputFormat, constraints, examples, difficulty, solution, timeLimit, memoryLimit, hints } = req.body;
+    const { id, title, statement, inputFormat, outputFormat, constraints, examples, difficulty, tags, timeLimit, memoryLimit, hints } = req.body;
     
     try {
         const newProblem = await Problem.create({
-            id, title, statement, inputFormat, outputFormat, constraints, examples, difficulty, solution, timeLimit, memoryLimit, hints
+            id, title, statement, inputFormat, outputFormat, constraints, examples, difficulty, tags, timeLimit, memoryLimit, hints
         });
         res.status(201).json(newProblem);
     } catch (error) {

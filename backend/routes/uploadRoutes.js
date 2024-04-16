@@ -5,7 +5,7 @@ const auth = require("../middlewares/auth");
 const uploadController = require("../controllers/uploadController");
 
 route.post(
-  "/api/upload",
+  "/upload",
   uploadImage,
   upload,
   auth,

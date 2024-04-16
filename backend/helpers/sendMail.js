@@ -15,10 +15,14 @@ const oauth2client = new OAuth2(
 );
 
 const sendEmailRegister = (to, url, text) => {
+  // Set credentials for OAuth2 client
   oauth2client.setCredentials({
     refresh_token: G_REFRESH_TOKEN,
   });
+
   const accessToken = oauth2client.getAccessToken();
+
+  // Configure SMTP transporter with Gmail and OAuth2 authentication
   const smtpTransport = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -124,6 +128,7 @@ const sendEmailRegister = (to, url, text) => {
   });
 };
 
+// Password reset email
 const sendEmailReset = (to, url, text, name) => {
   oauth2client.setCredentials({
     refresh_token: G_REFRESH_TOKEN,
