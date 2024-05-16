@@ -47,36 +47,29 @@ router.post('/compile', async (req, res) => {
         return res.status(400).json({ error: 'Code or language not provided' });
     }
 
-    // Write the submitted code to a new file
     const filename = uuidv4();
-    const sourcePath = path.join(submissionsDir, `${filename}.${language}`);
+    const sourcePath = path.join(submissionsDir, `${filename}.${language === 'python' ? 'py' : language}`);
     fs.writeFileSync(sourcePath, code);
 
     try {
-        // Compile the code
         const executablePath = await compileCode(sourcePath, language);
-        // Run static analysis on the code
-        const cppcheckResults = await runCppCheck(sourcePath); 
-
-        console.log('Starting test case execution...');
-        // Execute compiled binary against provided test cases
-        const results = await Promise.all(testCases.map(async (testCase, index) => {
-            const output = await executeBinary(executablePath, testCase.input);
+        const results = await Promise.all(testCases.map(async (testCase) => {
+            const output = await executeBinary(executablePath, testCase.input, language);
             const passed = output.trim() === testCase.output.trim();
-            return { 
+            return {
                 input: testCase.input,
                 expectedOutput: testCase.output,
                 actualOutput: output,
-                passed 
+                passed
             };
         }));
-        
-        // Return the results of the compilation, analysis, and execution
-        res.json({ cppcheckResults, results });
+
+        res.json({ results });
     } catch (error) {
         console.error('Error in processing the request:', error);
-        res.status(500).json({ success: false, error: error.error || "Compilation failed. Please check your code and try again." });
+        res.status(500).json({ success: false, error: error.message || "Compilation failed. Please check your code and try again." });
     }
 });
+
 
 module.exports = router;

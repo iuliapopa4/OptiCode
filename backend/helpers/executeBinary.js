@@ -1,39 +1,49 @@
 const { spawn } = require('child_process');
 
-function executeBinary(executablePath, input) {
+function executeBinary(executablePath, input, language) {
     return new Promise((resolve, reject) => {
         console.log(`Executing binary: ${executablePath} with input: ${input}`);
-        // Start the executable as a child process
-        const process = spawn(executablePath, { stdio: ['pipe', 'pipe', 'pipe'] });
+        let process;
+        if (language === 'python') {
+            process = spawn('python', [executablePath]);
+        } else {
+            process = spawn(executablePath, { stdio: ['pipe', 'pipe', 'pipe'] });
+        }
 
-        let output = ''; // output data from the process
+        let output = '';
+        let error = '';
 
-        // Write the input to the process's stdin and close it
+        process.stdin.setEncoding('utf-8');
+        process.stdout.setEncoding('utf-8');
+        process.stderr.setEncoding('utf-8');
+
         process.stdin.write(input);
         process.stdin.end();
 
-        // Handle data received from the process's stdout
         process.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
-            output += data.toString(); 
+            output += data;
         });
 
-        // Handle errors received from the process's stderr
         process.stderr.on('data', (data) => {
             console.log(`stderr: ${data}`);
-            // Handle errors received from the process's stderr
-            reject(new Error(`Execution error: ${data.toString()}`));
+            error += data;
         });
 
-        // Handle errors received from the process's stderr
         process.on('close', (code) => {
             console.log(`Process exited with code: ${code}`);
             if (code === 0) {
-                // If the process exits successfully, resolve with the output
                 resolve(output.trim());
             } else {
-                // If the process exits with an error code, reject the promise
-                reject(new Error(`Process exited with code ${code}`));
+                // Extract the relevant error message for Python
+                if (language === 'python' && error) {
+                    const errorLines = error.split('\n');
+                    const relevantErrorLine = errorLines.find(line => line.startsWith('NameError'));
+                    const sanitizedError = relevantErrorLine ? relevantErrorLine : errorLines[errorLines.length - 1];
+                    reject(new Error(sanitizedError.trim()));
+                } else {
+                    reject(new Error(`Execution error: ${error}`));
+                }
             }
         });
     });

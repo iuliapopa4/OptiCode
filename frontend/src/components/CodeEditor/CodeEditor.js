@@ -24,6 +24,7 @@ int main() {
   return 0;
  }
     `,
+    python: `print("Hello, Python!")\n`
       };
 
   const { token } = useContext(AuthContext);
@@ -33,6 +34,7 @@ int main() {
   const [isError, setIsError] = useState(false);
   const [language, setLanguage] = useState('cpp');
   const [editorContent, setEditorContent] = useState(languageTemplates[language]); 
+  const [feedback, setFeedback] = useState('');
 
   // Update editor content when language changes
   useEffect(() => {
@@ -93,6 +95,18 @@ int main() {
       setLoading(false);
     }
   };
+
+  const handleAnalyzeCode = async () => {
+    try {
+        const response = await axios.post('/api/analyze', {
+            code: editorContent
+        }, { headers: { Authorization: `Bearer ${token}` }});
+        setFeedback(response.data.feedback);
+    } catch (error) {
+        setFeedback(`Error analyzing code: ${error.response?.data.error || error.message}`);
+        console.log("Error analyzer");
+    }
+};
   
 
   return (
@@ -101,10 +115,12 @@ int main() {
         <select onChange={handleLanguageChange} value={language}>
           <option value="c">C</option>
           <option value="cpp">C++</option>
+          <option value="python">Python</option>
+
         </select>
       </div>
       <AceEditor
-      mode={language === 'c' ? 'c_cpp' : 'c_cpp'} 
+      mode={language === 'python' ? 'python' : 'c_cpp'} 
       theme="monokai"
       onChange={setEditorContent}
       value={editorContent}
@@ -121,8 +137,12 @@ int main() {
       <button className="submitBtn" onClick={handleSubmission} disabled={loading}>
         {loading ? 'Running...' : 'Run'}
       </button>
+      <button className="analyzeBtn" onClick={handleAnalyzeCode}>
+          Analyze Code
+      </button>
       {output && !isError && <Output message={output} isError={false} />}
       {error && isError && <Output message={error} isError={true} />}
+      {feedback && <Output message={feedback} isError={false} />}
     </div>
   );
 };
