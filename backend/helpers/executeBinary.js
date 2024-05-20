@@ -2,13 +2,8 @@ const { spawn } = require('child_process');
 
 function executeBinary(executablePath, input, language) {
     return new Promise((resolve, reject) => {
-        console.log(`Executing binary: ${executablePath} with input: ${input}`);
-        let process;
-        if (language === 'python') {
-            process = spawn('python', [executablePath]);
-        } else {
-            process = spawn(executablePath, { stdio: ['pipe', 'pipe', 'pipe'] });
-        }
+        console.log(`Executing Python script: ${executablePath} with input: ${input}`);
+        const process = spawn('python', [executablePath]);
 
         let output = '';
         let error = '';
@@ -36,7 +31,7 @@ function executeBinary(executablePath, input, language) {
                 resolve(output.trim());
             } else {
                 // Extract the relevant error message for Python
-                if (language === 'python' && error) {
+                if (error) {
                     const errorLines = error.split('\n');
                     const relevantErrorLine = errorLines.find(line => line.startsWith('NameError'));
                     const sanitizedError = relevantErrorLine ? relevantErrorLine : errorLines[errorLines.length - 1];

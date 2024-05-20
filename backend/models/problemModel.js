@@ -9,46 +9,21 @@ const problemSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Title is required'],
   },
-  statement: {
+  text: {
     type: String,
     required: [true, 'Problem statement is required'],
   },
-  inputFormat: {
-    type: String,
-    required: [true, 'Input format is required'],
-  },
-  outputFormat: {
-    type: String,
-    required: [true, 'Output format is required'],
-  },
-  constraints: {
-    type: String,
-    required: [true, 'Constraints are required'],
-  },
-  examples: [{
-    input: { type: String, required: [true, 'Example input is required'] },
-    output: { type: String, required: [true, 'Example output is required'] }
-  }],
   difficulty: {
     type: String,
     enum: ['easy', 'medium', 'hard'], 
     required: true,
   },
-  solution: {
+  code: {
     type: String,
     required: false,
     default: "" 
   },
-  tags: [{ type: String }], 
-  timeLimit: {
-    type: Number,
-    required: true,
-  },
-  memoryLimit: {
-    type: Number, 
-    required: true,
-  },
-  hints: [String],
+  tags: [{ type: String }],
   createdAt: { 
     type: Date,
     default: Date.now,
@@ -56,7 +31,8 @@ const problemSchema = new mongoose.Schema({
   updatedAt: { 
     type: Date,
     default: Date.now,
-  }
+  },
+  test_list: [{ type: String }]
 });
 
-module.exports = mongoose.model('Problem', problemSchema);;
+module.exports = mongoose.model('Problem', problemSchema);

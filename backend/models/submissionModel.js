@@ -17,17 +17,17 @@ const submissionSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  result: { 
+  score: { 
     type: String, 
-    required: true 
-  }, 
-  testCasesPassed: { 
-    type: Number, 
-    required: true 
   },
-  totalTestCases: { 
-    type: Number, 
-    required: true 
+  result:{
+    type: String,
+  },
+  passedTests: {
+    type: Number,
+  },
+  totalTests: {
+    type: Number,
   },
   createdAt: { 
     type: Date, 

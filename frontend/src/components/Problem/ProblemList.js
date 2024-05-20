@@ -3,17 +3,11 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../NavBar/NavBar";
 import './problemlist.css';
-import FilterModal from './FilterModal';
 
 const ProblemList = () => {
   const [problems, setProblems] = useState([]);
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    searchTerm: '',
-    difficulty: '',
-    dataStructure: '',
-    algorithm: '',
-  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [difficultyFilter, setDifficultyFilter] = useState('');
 
   useEffect(() => {
     const fetchProblems = async () => {
@@ -27,37 +21,39 @@ const ProblemList = () => {
     fetchProblems();
   }, []);
 
-  const toggleFilterModal = () => setIsFilterModalOpen(!isFilterModalOpen);
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
-  const applyFilters = () => {
-    toggleFilterModal();
+  const handleDifficultyChange = (e) => {
+    setDifficultyFilter(e.target.value);
   };
 
   const filteredProblems = problems.filter((problem) => {
-    const matchesDifficulty = !filters.difficulty || problem.difficulty === filters.difficulty;
-    const matchesDataStructure = !filters.dataStructure || problem.tags.includes(filters.dataStructure);
-    const matchesAlgorithm = !filters.algorithm || problem.tags.includes(filters.algorithm);
-    const matchesSearchTerm = problem.title.toLowerCase().includes(filters.searchTerm.toLowerCase());
-  
-    return matchesDifficulty && matchesDataStructure && matchesAlgorithm && matchesSearchTerm;
+    return (
+      problem.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (!difficultyFilter || problem.difficulty === difficultyFilter)
+    );
   });
-  
 
   return (
     <div>
       <NavBar />
       <div className='problem'>
         <div className="filters">
-          <button onClick={toggleFilterModal}>Filter Problems</button>
-        </div>
-        {isFilterModalOpen && (
-          <FilterModal 
-            filters={filters} 
-            setFilters={setFilters} 
-            applyFilters={applyFilters} 
-            onClose={toggleFilterModal} 
+          <input
+            type="text"
+            placeholder="Search by title..."
+            value={searchTerm}
+            onChange={handleSearchChange}
           />
-        )}
+          <select onChange={handleDifficultyChange} value={difficultyFilter}>
+            <option value="">All Difficulties</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="difficult">Difficult</option>
+          </select>
+        </div>
         <ul>
           {filteredProblems.map(problem => (
             <li key={problem.id}>
