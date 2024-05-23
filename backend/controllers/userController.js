@@ -4,6 +4,7 @@ const validateEmail = require("../helpers/validateEmail");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const Problem = require('../models/problemModel');
 
 const userController = {
   register: async (req, res) => {
@@ -172,6 +173,88 @@ const userController = {
       return res.status(200).json({ msg: "Signout success." });
     } catch (err) {
       res.status(500).json({ msg: err.message });
+    }
+  },
+
+  updateUserPoints: async (userId, problemId, score) => {
+    try {
+      const user = await User.findById(userId);
+      const problem = await Problem.findById(problemId);
+
+      if (!user || !problem) {
+        throw new Error('User or Problem not found');
+      }
+
+      let points = score;
+      if (problem.difficulty === 'medium') {
+        points *= 2;
+      } else if (problem.difficulty === 'hard') {
+        points *= 3;
+      }
+
+      const existingScore = user.highestScores.find(
+        (entry) => entry.problemId.toString() === problemId.toString()
+      );
+
+      if (!existingScore) {
+        user.highestScores.push({ problemId, score });
+        user.points += points;
+      } else if (existingScore.score < score) {
+        user.points += (points - existingScore.score);
+        existingScore.score = score;
+      }
+
+      await user.save();
+      return user.points;
+    } catch (error) {
+      console.error('Error updating user points:', error);
+      throw error;
+    }
+  },
+  
+  getUserProfile : async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id)
+        .select('-password')
+        .populate('submissions');
+  
+      if (!user) {
+        console.error('User not found');
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      console.log(`User found: ${user.name}`);
+      console.log(`User submissions: ${JSON.stringify(user.submissions, null, 2)}`);
+  
+      // Set to store unique problem IDs with 100% score
+      const solvedProblemsSet = new Set();
+  
+      // Iterate through submissions to count solved problems
+      user.submissions.forEach(submission => {
+        console.log(`Checking submission: ${submission.problemId} with score ${submission.score}`);
+        if (submission.score === '100%') {
+          solvedProblemsSet.add(submission.problemId.toString());
+        }
+      });
+  
+      // Number of unique solved problems
+      const solvedProblems = solvedProblemsSet.size;
+  
+      // Print the solved problems for debugging
+      console.log(`User has solved the following problems: ${Array.from(solvedProblemsSet).join(', ')}`);
+      console.log(`Total solved problems: ${solvedProblems}`);
+  
+      res.status(200).json({
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        points: user.points,
+        solvedProblems,
+        submissions: user.submissions
+      });
+    } catch (error) {
+      console.error(`Error fetching user profile: ${error.message}`);
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
   

@@ -62,7 +62,6 @@ const ProblemPage = () => {
         )}
       </div>
       <div className="submissions-section">
-        <h2>Your Submissions</h2>
         <ul>
           {submissions.map((submission) => {
             const score = submission.score ? submission.score : 'Score not available';

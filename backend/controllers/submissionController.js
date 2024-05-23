@@ -1,6 +1,8 @@
 const Submission = require('../models/submissionModel');
 const Problem = require('../models/problemModel');
+const User = require('../models/userModel'); // Ensure User model is imported
 const { evaluateSolution } = require('../helpers/evaluateSolution');
+const { updateUserPoints } = require('../controllers/userController'); // Ensure updateUserPoints is imported
 const mongoose = require('mongoose');
 
 const submissionController = {
@@ -49,6 +51,23 @@ const submissionController = {
         createdAt: new Date()
       });
 
+      // Update user's streaks and last submission date
+      const user = await User.findById(userId);
+      const today = new Date().setHours(0, 0, 0, 0);
+      const lastSubmissionDate = user.lastSubmissionDate ? new Date(user.lastSubmissionDate).setHours(0, 0, 0, 0) : null;
+
+      if (lastSubmissionDate && lastSubmissionDate === today - 86400000) {
+        // If the last submission was yesterday, increment the streak
+        user.streaks += 1;
+      } else if (lastSubmissionDate !== today) {
+        // If the last submission was not today, reset the streak to 1
+        user.streaks = 1;
+      }
+
+      user.lastSubmissionDate = new Date();
+      await updateUserPoints(userId, problemId, score);
+      await user.save();
+
       res.status(201).json({ submission, evaluation });
     } catch (error) {
       console.error('Error handling submission:', error);
@@ -86,6 +105,33 @@ const submissionController = {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   },
+ getUserSubmissions: async (req, res) => {
+    try {
+      const { userId } = req.params;
+      console.log('getUserSubmissions - Received userId:', userId);
+
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        console.log('Invalid user ID format:', userId);
+        return res.status(400).json({ error: 'Invalid user ID format' });
+      }
+
+      const objectId = new mongoose.Types.ObjectId(userId);
+      console.log('getUserSubmissions - Converted ObjectId:', objectId);
+
+      const submissions = await Submission.find({ userId: objectId }).sort({ createdAt: -1 });
+      console.log('Submissions:', submissions);
+
+      // Get a list of unique problems attempted
+      const uniqueProblems = Array.from(new Set(submissions.map(submission => submission.problemId.toString())));
+      const problems = await Problem.find({ _id: { $in: uniqueProblems } });
+
+      res.status(200).json({ submissions, solvedProblemsCount: uniqueProblems.length, problems });
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+
 };
 
 module.exports = submissionController;

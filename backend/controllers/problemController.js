@@ -2,18 +2,32 @@ const Problem = require('../models/problemModel');
 
 const problemController = {
   createProblem: async (req, res) => {
-    const { id, title, statement, inputFormat, outputFormat, constraints, examples, difficulty, tags, timeLimit, memoryLimit, hints } = req.body;
-    
+    const { title, statement, difficulty, code, test_list } = req.body;
+
     try {
-        const newProblem = await Problem.create({
-            id, title, statement, inputFormat, outputFormat, constraints, examples, difficulty, tags, timeLimit, memoryLimit, hints
-        });
-        res.status(201).json(newProblem);
+      // Calculate the new problem ID based on the current count of problems
+      const lastProblem = await Problem.findOne().sort({ id: -1 });
+      const newId = lastProblem ? lastProblem.id + 1 : 1;
+
+      console.log('New Problem ID:', newId);
+      console.log('Request Body:', req.body);
+
+      const newProblem = await Problem.create({
+        id: newId,
+        title,
+        text: statement,
+        difficulty,
+        code,
+        test_list
+      });
+      
+      console.log('New Problem Created:', newProblem);
+      res.status(201).json(newProblem);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error', message: error.message });
+      console.error('Error creating problem:', error);
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
-},
+  },
 
 
   getAllProblems: async (req, res) => {
@@ -25,6 +39,15 @@ const problemController = {
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
+  getTotalProblems: async (req, res) => {
+    try {
+      const totalProblems = await Problem.countDocuments();
+      res.json({ totalProblems });
+    } catch (error) {
+      console.error('Error fetching total problems:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
 
   getProblemById: async (req, res) => {
     try {
@@ -34,25 +57,22 @@ const problemController = {
       }
       res.json(problem);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching problem by ID:', error);
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
-  getProblemExamplesById: async (req, res) => {
+  getProblemByObjectId: async (req, res) => {
     try {
-      const { id } = req.params;
-      const problem = await Problem.findById(id);
+      const problem = await Problem.findById(req.params.id);
       if (!problem) {
         return res.status(404).json({ error: 'Problem not found' });
       }
-      const examples = problem.examples;
-      res.json(examples);
+      res.json(problem);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching problem by Object ID:', error);
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
-  
 
   updateProblemById: async (req, res) => {
     try {

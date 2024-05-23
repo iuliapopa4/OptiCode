@@ -26,8 +26,23 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    lastSubmissionDate: {
+      type: Date,
+      default: null,
+    },
     submissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Submission' }],
-    scores: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Score' }],
+    points: { 
+      type: Number, 
+      default: 0 
+    },
+    highestScores: [{
+      problemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Problem' },
+      score: { type: Number }
+    }],
+    role: {
+      type: String,
+      default: "user" 
+    }
 
   },
   { timestamps: true }

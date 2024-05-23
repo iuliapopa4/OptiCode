@@ -41,18 +41,21 @@ const ProblemList = () => {
       <NavBar />
       <div className='problem'>
         <div className="filters">
-          <input
-            type="text"
-            placeholder="Search by title..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <select onChange={handleDifficultyChange} value={difficultyFilter}>
-            <option value="">All Difficulties</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="difficult">Difficult</option>
-          </select>
+          <Link to="/addProblem" className="add-problem-button">Suggest a Problem</Link>
+          <div className="search-filter-wrapper">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <select onChange={handleDifficultyChange} value={difficultyFilter}>
+              <option value="">All Difficulties</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
         </div>
         <ul>
           {filteredProblems.map(problem => (

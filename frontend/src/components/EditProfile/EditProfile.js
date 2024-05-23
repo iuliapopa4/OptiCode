@@ -10,6 +10,8 @@ import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import NavBar from "../NavBar/NavBar";
+
 
 const initialState = {
   name: "",
@@ -148,6 +150,7 @@ const EditProfile = () => {
     <>
       <ToastContainer />
       <div className="editprofile">
+      <NavBar />
         <div className="editprofile_avatar">
           <div className="editprofile_avatar-wrapper" onClick={handleInput}>
             <Avatar avatar={avatar} />

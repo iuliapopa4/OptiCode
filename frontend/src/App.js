@@ -8,6 +8,8 @@ import ResetLayout from "./Layouts/ResetLayout/ResetLayout";
 import ProblemPage from "./components/Problem/ProblemPage";
 import ProblemList from "./components/Problem/ProblemList";
 import Submission from "./components/Problem/Submission";
+import AddProblem from "./components/Problem/AddProblem";
+import EditProfile from "./components/EditProfile/EditProfile";
 import Forgot from "./components/Forgot/Forgot";
 import { AuthContext } from "./context/AuthContext";
 import axios from "axios";
@@ -49,8 +51,10 @@ function App() {
         <Route path="/auth/reset-password/:token" element={<ResetLayout />} />
         <Route path="/api/auth/activate/:activation_token" element={<ActivateLayout />} />
         <Route path="/profile" element={<ProfileLayout />} />
+        <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/problems/:id" element={<ProblemPage />} />
         <Route path="/problems" element={<ProblemList />} />
+        <Route path="/addProblem" element={<AddProblem/>} />
         <Route path="/submission/:id" element={<Submission/>} />
         <Route path="/auth/forgot-password" element={<Forgot />} />
       </Routes>

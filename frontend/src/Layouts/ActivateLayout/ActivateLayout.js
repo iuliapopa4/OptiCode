@@ -22,10 +22,10 @@ const ActivateLayout = ({ history }) => {
         } catch (err) {
           if (err.response) {
             console.log(err);
-            toast(err.response.data.msg, {
-              className: "toast-failed",
-              bodyClassName: "toast-failed",
-            });
+            // toast(err.response.data.msg, {
+            //   className: "toast-failed",
+            //   bodyClassName: "toast-failed",
+            // });
           }
         }
       };      

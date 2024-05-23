@@ -1,34 +1,52 @@
 .authlayout {
-    height: 100vh;
-    background: #F5F5F5;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .authlayout_logo {
-    border-radius: 50%;
-  }
-  
-  .authlayout_logo img {
-    max-width: 150px;
-  }
-  
-  .authlayout_actions {
-    display: flex;
-    justify-content: space-between;
-    max-width: 370px;
-    width: 100%;
-    font-size: 14px;
-  }
-  
-  .authlayout_actions p {
-    cursor: pointer; 
-    text-transform: capitalize;
-    font-weight: 300;
-    
-  }
-  
+  height: 100vh;
+  background: #F5F5F5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px; 
+}
 
-  
+.authlayout_logo {
+  margin-bottom: 20px; 
+}
+
+.authlayout_logo img {
+  max-width: 150px;
+  border-radius: 50%;
+}
+
+.authlayout_actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  max-width: 370px;
+  width: 100%;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+.authlayout_actions div {
+  cursor: pointer; 
+  text-transform: capitalize;
+  font-weight: 300;
+  margin: 10px 0; 
+}
+
+.authlayout_actions span {
+  display: inline; 
+  font-weight: bold;
+  color: #6899c8;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.authlayout_actions span:hover {
+  color: #507aa1; 
+}
+
+.authlayout_actions p {
+  margin: 0; 
+  padding: 0; 
+}

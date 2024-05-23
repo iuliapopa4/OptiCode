@@ -12,5 +12,6 @@ route.post("/auth/reset_pass", auth, userController.reset);
 route.get("/auth/user", auth, userController.info);
 route.patch("/auth/user_update", auth, userController.update);
 route.get("/auth/signout", userController.signout);
+route.get('/profile', auth, userController.getUserProfile);
 
 module.exports = route;

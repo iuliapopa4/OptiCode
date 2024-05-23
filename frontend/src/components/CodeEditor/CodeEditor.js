@@ -64,6 +64,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
         }, { headers: { Authorization: `${token}` } });
 
         console.log('Submission saved:', submissionResponse.data);
+        // alert(`Points updated: ${submissionResponse.data.updatedPoints}`);
       }
     } catch (error) {
       console.error('Submission error:', error);

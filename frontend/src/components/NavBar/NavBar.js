@@ -35,6 +35,10 @@ const Navbar = () => {
   const goProfile = () => {
     navigate('/profile');
   };
+  
+  const goEdit = () => {
+    navigate('/editprofile');
+  };
 
   const goProblems = () => {
     navigate('/problems');
@@ -57,7 +61,7 @@ const Navbar = () => {
       <div className="navbar__streaks">
         <SiFireship className="streak-icon" />
         <span className="streak-count">{user && user.streaks}</span>
-        <span className="tooltip-text">Your consecutive days of coding</span>
+        <span className="tooltip-text">Consecutive days of coding</span>
       </div>
 
         <div className="navbar__avatar" onClick={toggleAvatarDropdown}>
@@ -65,7 +69,8 @@ const Navbar = () => {
           {isAvatarDropdownOpen && (
             <div className="avatar-dropdown">
               <ul>
-                <li onClick={goProfile}>Edit Profile</li>
+                <li onClick={goProfile}>View Profile</li>
+                <li onClick={goEdit}>Edit Profile</li>
                 <li onClick={handleLogout}>Logout</li>
               </ul>
             </div>

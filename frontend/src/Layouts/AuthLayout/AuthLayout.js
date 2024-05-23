@@ -38,28 +38,21 @@ const AuthLayout = () => {
       {register && <Register />}
       {forgot && <Forgot />}
       <div className="authlayout_actions">
-      <p
-        className="authlayout_actions-l"
-        onClick={login ? handleRegister : handleLogin}
-      >
-      <p onClick={handleForgot}>
-        forgot ?
-      </p>
-
-        {login ? (
-          <>
-            Don't have an account? <br />
-            <span style={{fontWeight:"bold", color:"#6899c8", cursor:"pointer"}}>Register now</span>
-          </>
-        ) : (
-          <>
-           Already have an account? <br />
-            <span style={{fontWeight:"bold", color:"#6899c8", cursor:"pointer"}}>Login</span>
-          </>
-        )}
-      </p>
-    </div>
-
+        <div onClick={login ? handleRegister : handleLogin}>
+          {login ? (
+            <>
+              Don't have an account? <span>Register now</span>
+            </>
+          ) : (
+            <>
+              Already have an account? <span>Login</span>
+            </>
+          )}
+        </div>
+        <div onClick={handleForgot}>
+          Forgot your password?
+        </div>
+      </div>
     </div>
   );
 };

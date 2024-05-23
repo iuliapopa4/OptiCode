@@ -15,20 +15,20 @@ const problemSchema = new mongoose.Schema({
   },
   difficulty: {
     type: String,
-    enum: ['easy', 'medium', 'hard'], 
+    enum: ['easy', 'medium', 'hard'],
     required: true,
   },
   code: {
     type: String,
     required: false,
-    default: "" 
+    default: ""
   },
   tags: [{ type: String }],
-  createdAt: { 
+  createdAt: {
     type: Date,
     default: Date.now,
   },
-  updatedAt: { 
+  updatedAt: {
     type: Date,
     default: Date.now,
   },
