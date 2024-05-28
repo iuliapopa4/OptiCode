@@ -38,7 +38,7 @@ async function evaluateSolution(userCode, problemId) {
         );
 
         // Combine the problem's code, modified user's code, and test cases
-        const testCases = problem.test_list.map((test, index) => 
+        const testCases = problem.test_list.map((test, index) =>
             `try:\n    ${test}\n    print("TEST_${index + 1}_PASSED")\nexcept AssertionError:\n    print("TEST_${index + 1}_FAILED")\n`
         ).join('\n');
         const combinedCode = `${problem.code}\n\n${modifiedUserCode}\n\n${testCases}`;
@@ -50,13 +50,19 @@ async function evaluateSolution(userCode, problemId) {
 
             if (error) {
                 console.error('Execution error:', stderr);
-                return reject(new Error(`Execution error: ${stderr}`));
+
+                // Extract relevant lines for display
+                const errorLines = stderr.split('\n');
+                const relevantLines = errorLines.filter(line => line.trim() !== '' && !line.includes(tempFilePath));
+                const relevantError = relevantLines.slice(-3).join('\n'); // Get the last 3 lines of the error
+
+                return reject(new Error(relevantError));
             }
 
             // Count the number of passed tests
             const passedTests = stdout.split('\n').filter(line => line.includes('PASSED')).length;
             const totalTests = problem.test_list.length;
-            const score = (passedTests / totalTests) * 100.0;  // Ensure score is a floating-point number
+            const score = (passedTests / totalTests) * 100.0; // Ensure score is a floating-point number
 
             // Generate feedback based on the number of test cases passed
             let feedback = '';

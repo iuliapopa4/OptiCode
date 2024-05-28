@@ -33,8 +33,13 @@ function executeBinary(executablePath, input, language) {
                 // Extract the relevant error message for Python
                 if (error) {
                     const errorLines = error.split('\n');
-                    const relevantErrorLine = errorLines.find(line => line.startsWith('NameError'));
-                    const sanitizedError = relevantErrorLine ? relevantErrorLine : errorLines[errorLines.length - 1];
+                    // Filter out lines that are not relevant
+                    const relevantErrorLines = errorLines.filter(line => line.includes('Error') || line.match(/^\s*File\s/));
+                    // Find the line that caused the error and the error message
+                    const causeIndex = errorLines.findIndex(line => line.includes('Error'));
+                    const causeLines = errorLines.slice(causeIndex - 1, causeIndex + 1).join('\n');
+                    const sanitizedError = relevantErrorLines.length > 0 ? relevantErrorLines.join('\n') : causeLines;
+
                     reject(new Error(sanitizedError.trim()));
                 } else {
                     reject(new Error(`Execution error: ${error}`));

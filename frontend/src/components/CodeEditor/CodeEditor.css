@@ -58,7 +58,6 @@
   color: #fff;
 }
 
-
 .languageSelector {
   margin-bottom: 20px;
 }
@@ -76,4 +75,18 @@
   border-color: #007bff;
 }
 
+.improveCode {
+  text-align: center;
+  color: #333;
+  margin-top: 20px;
+}
 
+.improveCode span {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.improveCode span:hover {
+  color: #0056b3;
+}

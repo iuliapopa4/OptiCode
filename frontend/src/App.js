@@ -10,12 +10,13 @@ import ProblemList from "./components/Problem/ProblemList";
 import Submission from "./components/Problem/Submission";
 import AddProblem from "./components/Problem/AddProblem";
 import EditProfile from "./components/EditProfile/EditProfile";
+import Leaderboard from "./components/Leaderboard/Leaderboard"
 import Forgot from "./components/Forgot/Forgot";
 import { AuthContext } from "./context/AuthContext";
 import axios from "axios";
 
 function App() {
-  const { dispatch, token, isLoggedIn } = useContext(AuthContext);
+  const { dispatch, token, isLoggedIn, user } = useContext(AuthContext);
 
   // fetch access token
   useEffect(() => {
@@ -43,7 +44,24 @@ function App() {
     }
   }, [dispatch, token]);
 
-  
+  // check streaks when token and user changes
+  useEffect(() => {
+    if (token && user) {
+      const checkStreaks = async () => {
+        try {
+          const res = await axios.get("/api/checkStreaks", {
+            headers: { Authorization: token },
+          });
+          console.log('Streaks checked:', res.data);
+          dispatch({ type: "UPDATE_STREAKS", payload: res.data.streaks });
+        } catch (error) {
+          console.error('Error checking streaks:', error);
+        }
+      };
+      checkStreaks();
+    }
+  }, [token, user, dispatch]);
+
   return (
     <Router>
       <Routes>
@@ -57,6 +75,7 @@ function App() {
         <Route path="/addProblem" element={<AddProblem/>} />
         <Route path="/submission/:id" element={<Submission/>} />
         <Route path="/auth/forgot-password" element={<Forgot />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
       </Routes>
     </Router>
   );

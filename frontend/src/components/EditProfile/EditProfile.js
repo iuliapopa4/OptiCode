@@ -1,8 +1,7 @@
 import { isLength, isMatch } from "../helper/validate";
 import Input from "../Input/Input";
 import Avatar from "../Avatar/Avatar";
-import { MdVisibility } from "react-icons/md";
-import { MdVisibilityOff } from "react-icons/md";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { AiFillCamera } from "react-icons/ai";
 import { useContext, useRef, useState } from "react";
 import "./editprofile.css";
@@ -11,7 +10,6 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NavBar from "../NavBar/NavBar";
-
 
 const initialState = {
   name: "",
@@ -23,7 +21,7 @@ const EditProfile = () => {
   const inputFile = useRef(null);
   const [visible, setVisible] = useState(false);
   const { user, token, dispatch } = useContext(AuthContext);
-  const [avatar, setAvatar] = useState(false);
+  const [avatar, setAvatar] = useState(user.avatar);
   const [data, setData] = useState(initialState);
   const { name, password, cf_password } = data;
 
@@ -150,11 +148,11 @@ const EditProfile = () => {
     <>
       <ToastContainer />
       <div className="editprofile">
-      <NavBar />
+        <NavBar />
         <div className="editprofile_avatar">
           <div className="editprofile_avatar-wrapper" onClick={handleInput}>
             <Avatar avatar={avatar} />
-            <AiFillCamera />
+            <AiFillCamera className="camera-icon" />
           </div>
           <input
             type="file"
@@ -163,8 +161,7 @@ const EditProfile = () => {
             className="editprofile_avatar-input"
             onChange={changeAvatar}
           />
-                  <h2>{user && user.name}</h2>
-
+          <h2>{user && user.name}</h2>
         </div>
         <form className="editprofile_input" onSubmit={handleSubmit}>
           <div className="editprofile_input-form">

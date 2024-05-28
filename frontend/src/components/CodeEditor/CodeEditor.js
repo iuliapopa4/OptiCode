@@ -23,6 +23,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
 
   useEffect(() => {
     setEditorContent(languageTemplates[language]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
   const handleLanguageChange = (e) => {
@@ -64,7 +65,6 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
         }, { headers: { Authorization: `${token}` } });
 
         console.log('Submission saved:', submissionResponse.data);
-        // alert(`Points updated: ${submissionResponse.data.updatedPoints}`);
       }
     } catch (error) {
       console.error('Submission error:', error);
@@ -110,14 +110,12 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
         style={{ width: '100%', height: '400px' }}
       />
       <button className="submitBtn" onClick={handleSubmission} disabled={loading}>
-        {loading ? 'Running...' : 'Run'}
-      </button>
-      <button className="analyzeBtn" onClick={handleAnalyzeCode}>
-        Analyze Code
+        {loading ? 'Running...' : 'Submit'}
       </button>
       {output && !isError && <Output message={output} isError={false} />}
       {error && isError && <Output message={error} isError={true} />}
       {feedback && <Output message={feedback} isError={false} />}
+      <p className="improveCode">Want to improve your code? <span onClick={handleAnalyzeCode}>Analyze Code</span></p>
     </div>
   );
 };

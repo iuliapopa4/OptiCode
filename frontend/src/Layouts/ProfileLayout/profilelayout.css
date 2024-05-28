@@ -88,25 +88,25 @@ a:hover {
 }
 
 .submissions-section li.result-success {
-  background-color: #cbffd1; 
+  background-color: #cbffd1;
   color: #2f6627;
 }
 
 .submissions-section li.result-fail {
-  background-color: #ffdcdc; 
-  color: #8a1c1c; 
+  background-color: #ffdcdc;
+  color: #8a1c1c;
 }
 
 .submissions-section li.result-partial {
-  background-color: #fffae0; 
-  color: #857700; 
+  background-color: #fffae0;
+  color: #857700;
 }
 
 .submissions-section {
   margin-top: 20px;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -120,7 +120,7 @@ a:hover {
 .submissions-section ul {
   list-style-type: none;
   padding: 0;
-  width: 80%; 
+  width: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -131,8 +131,8 @@ a:hover {
   padding: 10px;
   background-color: #fff;
   border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  width: 80%; 
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  width: 80%;
   display: flex;
   justify-content: center;
   text-align: center;
@@ -141,7 +141,7 @@ a:hover {
 .submissions-section li a {
   color: inherit;
   text-decoration: none;
-  width: 100%; 
+  width: 100%;
 }
 
 .tooltip {
@@ -161,7 +161,7 @@ a:hover {
   z-index: 1;
   top: 100%;
   left: 50%;
-  margin-left: -100px; 
+  margin-left: -100px;
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -171,14 +171,65 @@ a:hover {
   opacity: 1;
 }
 
-
 .tooltip-text::after {
   content: "";
   position: absolute;
-  bottom: 100%; 
+  bottom: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
   border-color: transparent transparent #555 transparent;
+}
+
+/* Add new styles */
+.problems-container {
+  max-height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.problems-container ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.problems-container li {
+  width: 48%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.problems-container li a {
+  display: block;
+  text-align: center;
+}
+
+.problems-container li.difficulty-easy {
+  border-left: 5px solid #28a745;
+}
+
+.problems-container li.difficulty-medium {
+  border-left: 5px solid #ffc107;
+}
+
+.problems-container li.difficulty-hard {
+  border-left: 5px solid #dc3545;
+}
+
+.search-bar {
+  margin: 20px 0;
+  width: 100%;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }

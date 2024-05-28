@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const Problem = require('../models/problemModel');
+const Submission = require('../models/submissionModel'); 
 
 const userController = {
   register: async (req, res) => {
@@ -176,7 +177,7 @@ const userController = {
     }
   },
 
-  updateUserPoints: async (userId, problemId, score) => {
+  updateUserPoints: async (userId, problemId, newScore) => {
     try {
       const user = await User.findById(userId);
       const problem = await Problem.findById(problemId);
@@ -185,24 +186,32 @@ const userController = {
         throw new Error('User or Problem not found');
       }
 
-      let points = score;
+      newScore = parseFloat(newScore.toFixed(2)); // Ensure newScore is a floating-point number with 2 decimal places
+      let points = newScore;
+
       if (problem.difficulty === 'medium') {
         points *= 2;
       } else if (problem.difficulty === 'hard') {
         points *= 3;
       }
 
+      points = parseFloat(points.toFixed(2)); // Ensure points is a floating-point number with 2 decimal places
+
       const existingScore = user.highestScores.find(
         (entry) => entry.problemId.toString() === problemId.toString()
       );
 
       if (!existingScore) {
-        user.highestScores.push({ problemId, score });
+        user.highestScores.push({ problemId, score: newScore });
         user.points += points;
-      } else if (existingScore.score < score) {
-        user.points += (points - existingScore.score);
-        existingScore.score = score;
+      } else {
+        const oldPoints = (existingScore.score / 100) * (problem.difficulty === 'medium' ? 200 : problem.difficulty === 'hard' ? 300 : 100);
+        user.points -= oldPoints; // Subtract old points
+        user.points += points; // Add new points
+        existingScore.score = newScore;
       }
+
+      user.points = parseFloat(user.points.toFixed(2)); // Ensure user.points is a floating-point number with 2 decimal places
 
       await user.save();
       return user.points;
@@ -257,6 +266,52 @@ const userController = {
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
+
+  getLeaderboard: async (req, res) => {
+    try {
+      const users = await User.find().sort({ points: -1 }).select('name points').limit(10);
+      res.status(200).json(users);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
+    }
+  },
+
+  checkStreaks: async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        const lastSubmissionDate = user.lastSubmissionDate ? new Date(user.lastSubmissionDate) : null;
+
+        console.log('Today:', today);
+        console.log('Yesterday:', yesterday);
+        console.log('User\'s last submission date:', lastSubmissionDate);
+
+        if (!lastSubmissionDate || (lastSubmissionDate < yesterday)) {
+            // If the last submission was not yesterday or today, reset the streak to 0
+            user.streaks = 0;
+        } else if (lastSubmissionDate >= yesterday && lastSubmissionDate < today) {
+            // If the last submission was yesterday, keep the streak count
+            // This case is already handled by the current streak value
+        } else if (lastSubmissionDate >= today) {
+            // If the last submission was today, increment the streak count if it was already correct yesterday
+            user.streaks = (user.streaks > 0) ? user.streaks : 1;
+        }
+
+        await user.save();
+        res.json({ message: 'Streaks checked and updated if necessary', streaks: user.streaks });
+    } catch (error) {
+        console.error('Error checking streaks:', error);
+        res.status(500).json({ error: 'Internal Server Error', message: error.message });
+    }
+},
   
 };
 

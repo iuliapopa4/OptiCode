@@ -14,11 +14,6 @@ const Submission = () => {
   const [problem, setProblem] = useState(null);
 
   useEffect(() => {
-    if (!token) {
-      console.error('Auth token is missing');
-      return;
-    }
-
     // Fetch submission details
     axios.get(`/api/subm/${submissionId}`, { headers: { Authorization: `${token}` } })
       .then(response => {

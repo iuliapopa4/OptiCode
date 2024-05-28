@@ -49,30 +49,32 @@ const ProblemPage = () => {
   return (
     <div>
       <NavBar />
-      <div className="problem"> 
-        {problem ? (
-          <div>
-            <div className="divider"></div>
-            <h1>{problem.title}</h1>
-            <p>{problem.text}</p>
-            <CodeEditor problemId={problem._id} testCases={problem.examples} userId={user._id} />
-          </div>
-        ) : (
-          <p>Loading...</p>
-        )}
-      </div>
-      <div className="submissions-section">
-        <ul>
-          {submissions.map((submission) => {
-            const score = submission.score ? submission.score : 'Score not available';
-            const resultClass = parseInt(submission.score) === 100 ? 'result-success' : parseInt(submission.score) === 0 ? 'result-fail' : 'result-partial';
-            return (
-              <li key={submission._id} className={resultClass}>
-                <a href={`/submission/${submission._id}`}>Submission on {new Date(submission.createdAt).toLocaleString()}</a> {score}
-              </li>
-            );
-          })}
-        </ul>
+      <div className="problem-page">
+        <div className="problem-container">
+          {problem ? (
+            <div className="problem-details">
+              <h1>{problem.title}</h1>
+              <p>{problem.text}</p>
+              <CodeEditor problemId={problem._id} testCases={problem.examples} userId={user._id} />
+            </div>
+          ) : (
+            <p>Loading...</p>
+          )}
+        </div>
+        <div className="submissions-section">
+          <h2>Submissions</h2>
+          <ul>
+            {submissions.map((submission) => {
+              const score = submission.score ? submission.score : 'Score not available';
+              const resultClass = parseInt(submission.score) === 100 ? 'result-success' : parseInt(submission.score) === 0 ? 'result-fail' : 'result-partial';
+              return (
+                <li key={submission._id} className={resultClass}>
+                  <a href={`/submission/${submission._id}`}>Submission on {new Date(submission.createdAt).toLocaleString()}</a> {score}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </div>
   );

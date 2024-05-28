@@ -7,6 +7,7 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const problemRoutes = require('./routes/problemRoutes');
 const submissionRoutes = require('./routes/submissionRoutes');
 const analyzeCodeRoute = require('./routes/astRoute');
+const solutionRoutes = require('./routes/solutionRoutes');
 const compilerRouter = require('./helpers/compiler');
 const bodyParser = require('body-parser');
 const { PythonShell } = require('python-shell');
@@ -86,7 +87,8 @@ app.use('/api', problemRoutes);
 app.use('/api', submissionRoutes);           
 app.use('/api', userRoutes);                    
 app.use('/api', uploadRoutes); 
-app.use('/api', analyzeCodeRoute);                     
+app.use('/api', analyzeCodeRoute);    
+app.use('./api',solutionRoutes);                 
 
 
 module.exports = app;

@@ -43,6 +43,9 @@ const Navbar = () => {
   const goProblems = () => {
     navigate('/problems');
   }
+  const goLeaderboard = () => {
+    navigate('/leaderboard');
+  }
 
   return (
     <nav className="navbar">
@@ -53,7 +56,7 @@ const Navbar = () => {
         <div className="navbar__problems" onClick={goProblems}>
         Problems
       </div>
-      <div className="navbar__problems" >
+      <div className="navbar__problems"  onClick={goLeaderboard}>
         Leaderboard
       </div>
       </div>

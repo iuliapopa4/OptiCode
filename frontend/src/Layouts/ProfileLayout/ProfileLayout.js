@@ -14,7 +14,8 @@ const ProfileLayout = () => {
   const [problems, setProblems] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [selectedProblem, setSelectedProblem] = useState(null);
-  const [totalProblems, setTotalProblems] = useState(0); // New state for total problems
+  const [totalProblems, setTotalProblems] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,7 +50,7 @@ const ProfileLayout = () => {
         setProblems(response.data.problems || []);
       } catch (error) {
         console.error("Error fetching user problems:", error);
-        setProblems([]); 
+        setProblems([]);
       }
     };
 
@@ -60,7 +61,6 @@ const ProfileLayout = () => {
 
   const fetchSubmissionsForProblem = async (problemId) => {
     if (selectedProblem === problemId) {
-      // Toggle off if the same problem is clicked again
       setSelectedProblem(null);
       setSubmissions([]);
       return;
@@ -74,7 +74,13 @@ const ProfileLayout = () => {
     }
   };
 
-  
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredProblems = problems.filter((problem) =>
+    problem.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="profile-layout">
@@ -85,8 +91,8 @@ const ProfileLayout = () => {
           <h2>{userData.name}</h2>
           <p><MdEmail />   {userData.email}</p>
           <div className="tooltip">
-            <p><FaStar /> {userData.points}</p>
-          <span className="tooltip-text">Points</span>
+            <p><FaStar /> {userData.points.toFixed(2)}</p>
+            <span className="tooltip-text">Points</span>
           </div>
           <div className="tooltip">
             <p>
@@ -94,28 +100,53 @@ const ProfileLayout = () => {
             </p>
             <span className="tooltip-text">You solved {problems.length} problems out of {totalProblems}.</span>
           </div>
-          <ul>
-            {problems.length > 0 ? problems.map(problem => (
-              <li key={problem._id}>
-                <Link to="#" onClick={() => fetchSubmissionsForProblem(problem._id)}>{problem.title}</Link>
-              </li>
-            )) : <p>No problems found.</p>}
-          </ul>
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Search problems..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
           {selectedProblem && (
-            <>
-              <ul className="submissions-section">
-                {submissions.map(submission => {
-                  const score = submission.score ? submission.score : 'Score not available';
-                  const resultClass = parseInt(submission.score) === 100 ? 'result-success' : parseInt(submission.score) === 0 ? 'result-fail' : 'result-partial';
-                  return (
-                    <li key={submission._id} className={resultClass}>
-                      <Link to={`/submission/${submission._id}`}>Submission on {new Date(submission.createdAt).toLocaleString()}</Link> {score}
-                    </li>
-                  );
-                })}
-              </ul>
-            </>
+            <ul className="submissions-section">
+              {submissions.map((submission) => {
+                const score = submission.score ? submission.score : "Score not available";
+                const resultClass =
+                  parseInt(submission.score) === 100
+                    ? "result-success"
+                    : parseInt(submission.score) === 0
+                    ? "result-fail"
+                    : "result-partial";
+                return (
+                  <li key={submission._id} className={resultClass}>
+                    <Link to={`/submission/${submission._id}`}>
+                      Submission on {new Date(submission.createdAt).toLocaleString()}
+                    </Link>{" "}
+                    {score}
+                  </li>
+                );
+              })}
+            </ul>
           )}
+          <div className="problems-container">
+            <ul>
+              {filteredProblems.length > 0 ? (
+                filteredProblems.map((problem) => (
+                  <li
+                    key={problem._id}
+                    className={`difficulty-${problem.difficulty.toLowerCase()}`}
+                  >
+                    <Link to="#" onClick={() => fetchSubmissionsForProblem(problem._id)}>
+                      {problem.title}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <p>No problems found.</p>
+              )}
+            </ul>
+          </div>
         </div>
       ) : (
         <p>Loading...</p>

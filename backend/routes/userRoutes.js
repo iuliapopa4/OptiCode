@@ -13,5 +13,7 @@ route.get("/auth/user", auth, userController.info);
 route.patch("/auth/user_update", auth, userController.update);
 route.get("/auth/signout", userController.signout);
 route.get('/profile', auth, userController.getUserProfile);
+route.get('/leaderboard', userController.getLeaderboard);
+route.get('/checkStreaks', auth, userController.checkStreaks);
 
 module.exports = route;
