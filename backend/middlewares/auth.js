@@ -1,17 +1,19 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
 
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
-    // Extract token from request header
-    const token = req.header("Authorization");
+    const token = req.header('Authorization');
+    if (!token) return res.status(400).json({ msg: 'Authentication failed.' });
 
-    // Check if token exists
-    if (!token) return res.status(400).json({ msg: "Authentication failed." });
+    jwt.verify(token, process.env.ACCESS_TOKEN, async (err, decoded) => {
+      if (err) return res.status(400).json({ msg: 'Authentication failed.' });
 
-    jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
-      if (err) return res.status(400).json({ msg: "Authentication failed." });
-      // If token is valid, attach user information to request object
+      const user = await User.findById(decoded.id);
+      if (!user) return res.status(404).json({ msg: 'User not found.' });
+
       req.user = user;
+      console.log(`User authenticated: ${JSON.stringify(user)}`); // Log user information
       next();
     });
   } catch (err) {

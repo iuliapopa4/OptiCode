@@ -10,10 +10,18 @@ import ProblemList from "./components/Problem/ProblemList";
 import Submission from "./components/Problem/Submission";
 import AddProblem from "./components/Problem/AddProblem";
 import EditProfile from "./components/EditProfile/EditProfile";
-import Leaderboard from "./components/Leaderboard/Leaderboard"
+import Leaderboard from "./components/Leaderboard/Leaderboard";
 import Forgot from "./components/Forgot/Forgot";
+import AdminDashboard from "./components/Admin/AdminDashboard";
+import ManageProblems from "./components/Admin/ManageProblems";
+import CreateProblem from "./components/Admin/createProblem";
+import EditProblem from "./components/Admin/editProblem";
+import SuggestedProblems from "./components/Admin/suggestedProblems";
+import EditSuggestedProblem from "./components/Admin/editSuggestedProblem";
+import ManageUsers from "./components/Admin/ManageUsers";
 import { AuthContext } from "./context/AuthContext";
 import axios from "axios";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const { dispatch, token, isLoggedIn, user } = useContext(AuthContext);
@@ -72,10 +80,28 @@ function App() {
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/problems/:id" element={<ProblemPage />} />
         <Route path="/problems" element={<ProblemList />} />
-        <Route path="/addProblem" element={<AddProblem/>} />
-        <Route path="/submission/:id" element={<Submission/>} />
+        <Route path="/addProblem" element={<AddProblem />} />
+        <Route path="/submission/:id" element={<Submission />} />
         <Route path="/auth/forgot-password" element={<Forgot />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        
+        {/* Admin routes */}
+
+        <Route path="/admin/dashboard" element = {<AdminDashboard/>}/>
+        <Route path="/admin/manage-problems" element={<ManageProblems />} />
+        <Route path="/admin/addProblem" element={<CreateProblem />} />
+        <Route path="/admin/editProblem/:id" element={<EditProblem />} />
+        <Route path="/admin/manage-users" element={<ManageUsers />} />
+        <Route path="/admin/suggested-problems" element={<SuggestedProblems />} />
+        <Route path="/admin/editSuggestedProblem/:id" element={<EditSuggestedProblem />} />
+
+
+
+        {/* <ProtectedRoute path="/admin/dashboard" element={<AdminDashboard/>} isLoggedIn={isLoggedIn} user={user} adminOnly={true} /> */}
+        {/* <ProtectedRoute path="/admin/manage-problems" component={ManageProblems} isLoggedIn={isLoggedIn} user={user} adminOnly={true} />
+        <ProtectedRoute path="/admin/suggested-problems" component={ReviewSuggestedProblems} isLoggedIn={isLoggedIn} user={user} adminOnly={true} />
+        <ProtectedRoute path="/admin/manage-users" component={ManageUsers} isLoggedIn={isLoggedIn} user={user} adminOnly={true} />
+        <ProtectedRoute path="/admin/analytics" component={SiteAnalytics} isLoggedIn={isLoggedIn} user={user} adminOnly={true} /> Optional */}
       </Routes>
     </Router>
   );

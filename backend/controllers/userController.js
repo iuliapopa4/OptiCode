@@ -312,6 +312,15 @@ const userController = {
         res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
 },
+
+getUsers: async (req, res) => {
+  try {
+    const users = await User.find().select('-password'); // Exclude passwords from the results
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+},
   
 };
 

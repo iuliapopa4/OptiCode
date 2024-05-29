@@ -1,9 +1,8 @@
-import React from 'react';
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import Avatar from '../Avatar/Avatar';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { SiFireship } from 'react-icons/si';
 import './navbar.css';
 
@@ -35,7 +34,7 @@ const Navbar = () => {
   const goProfile = () => {
     navigate('/profile');
   };
-  
+
   const goEdit = () => {
     navigate('/editprofile');
   };
@@ -43,6 +42,7 @@ const Navbar = () => {
   const goProblems = () => {
     navigate('/problems');
   }
+
   const goLeaderboard = () => {
     navigate('/leaderboard');
   }
@@ -51,22 +51,26 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar__left">
         <div className="navbar__logo" onClick={goHome}>
-        <img src={require("../../img/logo.png")} alt="logo" />
+          <img src={require("../../img/logo.png")} alt="logo" />
         </div>
         <div className="navbar__problems" onClick={goProblems}>
-        Problems
-      </div>
-      <div className="navbar__problems"  onClick={goLeaderboard}>
-        Leaderboard
-      </div>
+          Problems
+        </div>
+        <div className="navbar__leaderboard" onClick={goLeaderboard}>
+          Leaderboard
+        </div>
       </div>
       <div className="navbar__right">
-      <div className="navbar__streaks">
-        <SiFireship className="streak-icon" />
-        <span className="streak-count">{user && user.streaks}</span>
-        <span className="tooltip-text">Consecutive days of coding</span>
-      </div>
-
+        <div className="navbar__streaks">
+          <SiFireship className="streak-icon" />
+          <span className="streak-count">{user && user.streaks}</span>
+          <span className="tooltip-text">Consecutive days of coding</span>
+        </div>
+        {user && user.role === 'admin' && (
+          <div className="navbar__admin-links">
+            <Link to="/admin/dashboard">Admin Dashboard</Link>
+          </div>
+        )}
         <div className="navbar__avatar" onClick={toggleAvatarDropdown}>
           {user && <Avatar imageUrl={user.avatar} />}
           {isAvatarDropdownOpen && (
