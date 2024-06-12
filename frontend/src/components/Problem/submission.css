@@ -8,15 +8,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-
-.submission-header.success {
-  color: #4CAF50;
-}
-
-.submission-header.failure {
-  color: #F44336;
-}
-
 .problem-details {
   background-color: #fff;
   padding: 15px;
@@ -59,4 +50,16 @@
 
 h3 {
   margin-top: 0;
+}
+
+.submission-details ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.submission-details ul li {
+  background: #f0f0f0;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
 }

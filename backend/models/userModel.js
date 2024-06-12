@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    maxStreak: {
+      type: Number,
+      default: 0
+  },
     lastSubmissionDate: {
       type: Date,
       default: null,
@@ -49,4 +53,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);

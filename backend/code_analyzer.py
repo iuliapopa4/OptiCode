@@ -19,9 +19,11 @@ class CodeAnalyzer(ast.NodeVisitor):
         self.add_feedback(self.check_function_name(node))
         self.add_feedback(self.check_return_statement(node))
         self.add_feedback(self.check_function_length(node))
-        self.add_feedback(self.check_nested_blocks(node))
         self.check_code_smells(node)
+        self.check_algorithm_efficiency(node)
+        self.check_readability(node)
         self.generic_visit(node)
+        self.check_unused_variables()  # Check for unused variables after visiting all nodes
 
     def visit_Name(self, node: ast.Name) -> None:
         if isinstance(node.ctx, ast.Store):
@@ -34,6 +36,7 @@ class CodeAnalyzer(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         self.add_feedback(self.check_recursion(node))
         self.add_feedback(self.check_security_issues(node))
+        self.check_functionality(node)
         self.generic_visit(node)
 
     def visit_For(self, node: ast.For) -> None:
@@ -45,7 +48,25 @@ class CodeAnalyzer(ast.NodeVisitor):
     def visit_ListComp(self, node: ast.ListComp) -> None:
         for generator in node.generators:
             if isinstance(generator.target, ast.Name):
-                self.used_vars.add(generator.target.id)
+                self.assigned_vars.add(generator.target.id)
+        self.generic_visit(node)
+
+    def visit_GeneratorExp(self, node: ast.GeneratorExp) -> None:
+        for generator in node.generators:
+            if isinstance(generator.target, ast.Name):
+                self.assigned_vars.add(generator.target.id)
+        self.generic_visit(node)
+
+    def visit_SetComp(self, node: ast.SetComp) -> None:
+        for generator in node.generators:
+            if isinstance(generator.target, ast.Name):
+                self.assigned_vars.add(generator.target.id)
+        self.generic_visit(node)
+
+    def visit_DictComp(self, node: ast.DictComp) -> None:
+        for generator in node.generators:
+            if isinstance(generator.target, ast.Name):
+                self.assigned_vars.add(generator.target.id)
         self.generic_visit(node)
 
     def check_function_name(self, node: ast.FunctionDef) -> Optional[str]:
@@ -63,9 +84,9 @@ class CodeAnalyzer(ast.NodeVisitor):
 
     def check_variable_name(self, node: ast.Name) -> Optional[str]:
         if isinstance(node.ctx, ast.Store):
-            if len(node.id) == 1 and node.id not in {"i", "j", "k","pi"}:
+            if len(node.id) == 1 and node.id not in {"i", "j", "k", "pi"}:
                 return f"Variable name '{node.id}' is too short. Consider using descriptive names."
-            elif len(node.id) < 3 and node.id not in {"i", "j", "k","pi"}:
+            elif len(node.id) < 3 and node.id not in {"i", "j", "k", "pi"}:
                 return f"Variable name '{node.id}' is quite short. Consider making it more descriptive."
         return None
 
@@ -77,17 +98,11 @@ class CodeAnalyzer(ast.NodeVisitor):
                     return f"Recursion detected in function '{node.func.id}'. Consider using an iterative approach if possible."
                 parent = getattr(parent, 'parent', None)
         return None
-    
+
     def check_function_length(self, node: ast.FunctionDef) -> Optional[str]:
         num_lines = len(node.body)
-        if num_lines > 30:  
+        if num_lines > 30:
             return f"Function '{node.name}' is too long ({num_lines} lines). Consider breaking it into smaller functions."
-        return None
-
-    def check_nested_blocks(self, node: ast.FunctionDef) -> Optional[str]:
-        nested_depth = self.get_nested_depth(node)
-        if nested_depth > 3:  
-            return f"Deeply nested block detected in function '{node.name}'. Consider refactoring for readability."
         return None
 
     def get_nested_depth(self, node: ast.AST, depth: int = 0) -> int:
@@ -96,12 +111,6 @@ class CodeAnalyzer(ast.NodeVisitor):
         if isinstance(node.body, list):
             return max((self.get_nested_depth(n, depth + 1) for n in node.body if isinstance(n, (ast.If, ast.For, ast.While, ast.Try))), default=depth)
         return depth
-
-    def check_unused_variables(self, node: ast.Assign) -> None:
-        assigned_vars = {n.id for n in node.targets if isinstance(n, ast.Name)}
-        unused_vars = assigned_vars - self.used_vars
-        for var in unused_vars:
-            self.add_feedback(f"Variable '{var}' is assigned a value but never used.")
 
     def check_bin_op(self, node: ast.BinOp) -> Optional[str]:
         if isinstance(node.op, ast.Add):
@@ -117,9 +126,41 @@ class CodeAnalyzer(ast.NodeVisitor):
                 return "Use of 'eval' or 'exec' detected. These functions can be dangerous and should be avoided."
         return None
 
-    def analyze_code_structure(self, code: str) -> None:
-        if code.count('for') > 3:
-            self.add_feedback("Consider reducing the number of nested loops for better readability and performance.")
+    def check_algorithm_efficiency(self, node: ast.FunctionDef) -> None:
+        # Check for nested loops that might indicate O(n^2) complexity
+        loop_nesting_level = 0
+        for inner_node in ast.walk(node):
+            if isinstance(inner_node, ast.For):
+                loop_nesting_level += 1
+            if loop_nesting_level > 2:
+                self.add_feedback(f"Function '{node.name}' contains nested loops. Consider optimizing to reduce time complexity.")
+                break  # Report only the first occurrence
+
+        # Check for inefficient membership checks (e.g., using lists instead of sets)
+        for inner_node in ast.walk(node):
+            if isinstance(inner_node, ast.Call):
+                if isinstance(inner_node.func, ast.Attribute):
+                    if inner_node.func.attr in ['append', 'extend'] and isinstance(inner_node.func.value, ast.Name):
+                        collection_name = inner_node.func.value.id
+                        if any(isinstance(e, ast.Name) and e.id == collection_name for e in self.assigned_vars):
+                            self.add_feedback(f"Consider using a set for '{collection_name}' for faster membership checks.")
+
+    def check_functionality(self, node: ast.Call) -> None:
+        # Detect common tasks and suggest more efficient methods
+        if isinstance(node.func, ast.Name) and node.func.id == 'sort':
+            self.add_feedback("Consider using the built-in sorted() function for better performance.")
+        if isinstance(node.func, ast.Attribute) and node.func.attr in {'append', 'extend'}:
+            collection_name = node.func.value.id
+            if collection_name in self.assigned_vars:
+                self.add_feedback(f"Consider using list comprehensions for '{collection_name}' for better readability and performance.")
+
+    def check_readability(self, node: ast.FunctionDef) -> None:
+        # Suggest breaking down long functions
+        if len(node.body) > 20:
+            self.add_feedback(f"Function '{node.name}' is quite long. Consider breaking it down into smaller, more manageable functions.")
+        # Suggest adding comments or documentation
+        if not any(isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Str) for stmt in node.body):
+            self.add_feedback(f"Function '{node.name}' lacks documentation. Consider adding comments or docstrings for better readability.")
 
     def analyze_complexity(self, node: ast.FunctionDef) -> None:
         complexity = sum(1 for _ in ast.walk(node) if isinstance(_, (ast.If, ast.For, ast.While, ast.Try)))
@@ -130,7 +171,7 @@ class CodeAnalyzer(ast.NodeVisitor):
         if len(node.args.args) > 5:  # Arbitrary threshold
             self.add_feedback(f"Function '{node.name}' has too many parameters. Consider using a data class or passing a single object.")
 
-    def check_unused_variables_for_whole_code(self):
+    def check_unused_variables(self):
         unused_vars = self.assigned_vars - self.used_vars
         for var in unused_vars:
             self.add_feedback(f"Variable '{var}' is assigned a value but never used.")
@@ -142,10 +183,6 @@ class CodeAnalyzer(ast.NodeVisitor):
             self.add_feedback(f"Syntax error: {e}")
             return "\n".join(self.feedback_list)
 
-        # Print the AST
-        # ast_dump = ast.dump(tree, indent=4)
-        # print(ast_dump)
-
         for node in ast.walk(tree):
             for child in ast.iter_child_nodes(node):
                 child.parent = node
@@ -153,8 +190,7 @@ class CodeAnalyzer(ast.NodeVisitor):
                 self.analyze_complexity(node)
 
         self.visit(tree)
-        self.analyze_code_structure(code)
-        self.check_unused_variables_for_whole_code()
+        self.check_unused_variables()  # Check for unused variables after visiting all nodes
 
         if not self.feedback_list:
             self.add_feedback("No suggestions. Your code looks good!")

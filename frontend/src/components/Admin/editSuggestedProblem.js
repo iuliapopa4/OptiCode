@@ -2,7 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from "../../context/AuthContext";
 import { useParams, useNavigate } from 'react-router-dom';
-import './Admin.css'; // Import the consolidated CSS file
+import './css/suggestedproblems.css'; // Import the consolidated CSS file
+import NavBar from "../NavBar/NavBar";
+
 
 const EditSuggestedProblem = () => {
   const [problem, setProblem] = useState(null);
@@ -53,6 +55,7 @@ const EditSuggestedProblem = () => {
 
   return (
     <div className="edit-problem">
+      <NavBar />
       <h1>Edit Suggested Problem</h1>
       <form>
         <div>

@@ -221,11 +221,9 @@ const userController = {
     }
   },
   
-  getUserProfile : async (req, res) => {
+  getUserProfile: async (req, res) => {
     try {
-      const user = await User.findById(req.user.id)
-        .select('-password')
-        .populate('submissions');
+      const user = await User.findById(req.user.id).select('-password').populate('submissions');
   
       if (!user) {
         console.error('User not found');
@@ -252,6 +250,8 @@ const userController = {
       // Print the solved problems for debugging
       console.log(`User has solved the following problems: ${Array.from(solvedProblemsSet).join(', ')}`);
       console.log(`Total solved problems: ${solvedProblems}`);
+      console.log(`Current streak: ${user.streaks}`);
+      console.log(`Max streak: ${user.maxStreak}`);
   
       res.status(200).json({
         name: user.name,
@@ -259,13 +259,17 @@ const userController = {
         avatar: user.avatar,
         points: user.points,
         solvedProblems,
-        submissions: user.submissions
+        submissions: user.submissions,
+        streaks: user.streaks,
+        maxStreak: user.maxStreak,
       });
     } catch (error) {
       console.error(`Error fetching user profile: ${error.message}`);
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
+  
+  
 
   getLeaderboard: async (req, res) => {
     try {
@@ -279,39 +283,37 @@ const userController = {
 
   checkStreaks: async (req, res) => {
     try {
-        const userId = req.user.id;
-        const user = await User.findById(userId);
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        const lastSubmissionDate = user.lastSubmissionDate ? new Date(user.lastSubmissionDate) : null;
-
-        console.log('Today:', today);
-        console.log('Yesterday:', yesterday);
-        console.log('User\'s last submission date:', lastSubmissionDate);
-
-        if (!lastSubmissionDate || (lastSubmissionDate < yesterday)) {
-            // If the last submission was not yesterday or today, reset the streak to 0
-            user.streaks = 0;
-        } else if (lastSubmissionDate >= yesterday && lastSubmissionDate < today) {
-            // If the last submission was yesterday, keep the streak count
-            // This case is already handled by the current streak value
-        } else if (lastSubmissionDate >= today) {
-            // If the last submission was today, increment the streak count if it was already correct yesterday
-            user.streaks = (user.streaks > 0) ? user.streaks : 1;
-        }
-
-        await user.save();
-        res.json({ message: 'Streaks checked and updated if necessary', streaks: user.streaks });
+      const userId = req.user.id;
+      const user = await User.findById(userId);
+  
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+  
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+  
+      const lastSubmissionDate = user.lastSubmissionDate;
+  
+      if (!lastSubmissionDate || new Date(lastSubmissionDate) < yesterday) {
+        // Reset streaks if the last submission was not yesterday or today
+        user.streaks = 0;
+      } else if (new Date(lastSubmissionDate) >= yesterday && new Date(lastSubmissionDate) < today) {
+        // Increment streaks if the last submission was yesterday
+        user.streaks += 1;
+      }
+  
+      if (user.streaks > user.maxStreak) {
+        user.maxStreak = user.streaks;
+      }
+  
+      await user.save();
+      res.json({ message: 'Streaks checked and updated if necessary', streaks: user.streaks, maxStreak: user.maxStreak });
     } catch (error) {
-        console.error('Error checking streaks:', error);
-        res.status(500).json({ error: 'Internal Server Error', message: error.message });
+      console.error('Error checking streaks:', error);
+      res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
-},
+  },
+  
 
 getUsers: async (req, res) => {
   try {

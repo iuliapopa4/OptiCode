@@ -106,7 +106,7 @@ const sendEmailRegister = (to, url, text) => {
     <div class="container">
       <div class="wrapper">
         <div class="card">
-          <h1><span>Welcome !</span></h1>
+          <h1><span>Welcome to OptiCode!</span></h1>
           <p>Please validate your email by clicking the button below </p>
           <a href=${url}><button>${text}</button></a>
           <p class="spacing">

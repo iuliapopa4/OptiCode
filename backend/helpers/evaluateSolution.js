@@ -39,7 +39,7 @@ async function evaluateSolution(userCode, problemId) {
 
         // Combine the problem's code, modified user's code, and test cases
         const testCases = problem.test_list.map((test, index) =>
-            `try:\n    ${test}\n    print("TEST_${index + 1}_PASSED")\nexcept AssertionError:\n    print("TEST_${index + 1}_FAILED")\n`
+            `try:\n    ${test}\n    print("TEST_${index + 1}_PASSED")\nexcept AssertionError:\n    print("TEST_${index + 1}_FAILED")\nexcept Exception as e:\n    print("TEST_${index + 1}_ERROR", e)\n`
         ).join('\n');
         const combinedCode = `${problem.code}\n\n${modifiedUserCode}\n\n${testCases}`;
 
@@ -59,8 +59,34 @@ async function evaluateSolution(userCode, problemId) {
                 return reject(new Error(relevantError));
             }
 
-            // Count the number of passed tests
-            const passedTests = stdout.split('\n').filter(line => line.includes('PASSED')).length;
+            const outputLines = stdout.split('\n');
+            const testResults = [];
+            let passedTests = 0;
+
+            outputLines.forEach((line, index) => {
+                if (line.includes('PASSED')) {
+                    passedTests += 1;
+                    testResults.push({
+                        testCase: problem.test_list[index],
+                        passed: true,
+                        errorMessage: null
+                    });
+                } else if (line.includes('FAILED')) {
+                    testResults.push({
+                        testCase: problem.test_list[index],
+                        passed: false,
+                        errorMessage: 'Assertion failed'
+                    });
+                } else if (line.includes('ERROR')) {
+                    const errorMessage = line.split(' ').slice(2).join(' ');
+                    testResults.push({
+                        testCase: problem.test_list[index],
+                        passed: false,
+                        errorMessage: errorMessage
+                    });
+                }
+            });
+
             const totalTests = problem.test_list.length;
             const score = (passedTests / totalTests) * 100.0; // Ensure score is a floating-point number
 
@@ -79,7 +105,8 @@ async function evaluateSolution(userCode, problemId) {
                 passedTests,
                 score,
                 output: stdout,
-                feedback
+                feedback,
+                testResults
             });
         });
     });

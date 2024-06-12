@@ -12,7 +12,7 @@ router.get('/totalProblems', problemController.getTotalProblems);
 
 // Admin routes
 router.post('/createProblem', auth, isAdmin, problemController.createProblem);
-router.put('/updateProblem/:id', auth, isAdmin, problemController.updateProblemById);
-router.delete('/deleteProblem/:id', auth, isAdmin, problemController.deleteProblemById);
+router.patch('/updateProblemField/:id', problemController.updateProblemField); 
+router.delete('/deleteProblem/:id', auth, isAdmin, problemController.deleteProblemByObjectId);
 
 module.exports = router;

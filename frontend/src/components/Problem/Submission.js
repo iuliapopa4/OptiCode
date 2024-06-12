@@ -45,9 +45,20 @@ const Submission = () => {
         <p><strong>Submitted On:</strong> {new Date(submission.createdAt).toLocaleString()}</p>
         <p><strong>Score:</strong> {submission.score}</p>
         <p><strong>Test Cases Passed:</strong> {submission.passedTests} out of {submission.totalTests}</p>
+        <div>
+          <ul>
+            {submission.testResults.map((testResult, index) => (
+              <li key={index}>
+                <p>Test Case: {testResult.testCase}</p>
+                <p>Passed: {testResult.passed ? 'Yes' : 'No'}</p>
+                {testResult.errorMessage && <p>Error: {testResult.errorMessage}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <div className="code-snippet">
-        <SyntaxHighlighter language="python" style={dark}>
+        <SyntaxHighlighter language={submission.language || 'text'} style={dark}>
           {submission.code}
         </SyntaxHighlighter>
       </div>

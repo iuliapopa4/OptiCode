@@ -37,7 +37,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
     setError('');
     setOutput('');
     setIsError(false);
-
+  
     try {
       const compileResponse = await axios.post('/api/compile', {
         code: editorContent,
@@ -45,7 +45,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
         problemId,
         testCases
       }, { headers: { Authorization: `Bearer ${token}` } });
-
+  
       if (compileResponse.data.success === false) {
         setError(compileResponse.data.error);
         setIsError(true);
@@ -54,7 +54,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
         const formattedScore = score.toFixed(2);
         setOutput(`Score: ${formattedScore}%`);
         setIsError(false);
-
+  
         const submissionResponse = await axios.post(`/api/submitCode/${problemId}`, {
           userId,
           code: editorContent,
@@ -63,8 +63,12 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
           testCasesPassed: passedTests,
           totalTestCases: totalTests
         }, { headers: { Authorization: `${token}` } });
-
+  
         console.log('Submission saved:', submissionResponse.data);
+  
+        // Assuming the streaks are updated and returned in the response
+        const streakResponse = await axios.get('/api/streaks', { headers: { Authorization: `Bearer ${token}` } });
+        console.log('Streaks updated:', streakResponse.data);
       }
     } catch (error) {
       console.error('Submission error:', error);
@@ -74,6 +78,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
       setLoading(false);
     }
   };
+  
 
   const handleAnalyzeCode = async () => {
     try {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Admin.css'; // Import the consolidated CSS file
+import './css/addproblems.css'; // Import the consolidated CSS file
+import NavBar from "../NavBar/NavBar";
 
 const CreateProblem = () => {
   const [title, setTitle] = useState('');
@@ -24,6 +25,7 @@ const CreateProblem = () => {
 
   return (
     <div className="add-problem">
+      <NavBar />
       <h1>Add New Problem</h1>
       <form onSubmit={handleSubmit}>
         <div>

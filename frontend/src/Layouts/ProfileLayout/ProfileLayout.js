@@ -22,12 +22,29 @@ const ProfileLayout = () => {
       try {
         const response = await axios.get('/api/profile', { headers: { Authorization: token } });
         setUserData(response.data);
+        console.log('User data:', response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
 
+    const checkUserStreaks = async () => {
+      try {
+        const response = await axios.get('/api/checkStreaks', { headers: { Authorization: token } });
+        if (response.data) {
+          setUserData(prevState => ({
+            ...prevState,
+            streaks: response.data.streaks,
+            maxStreak: response.data.maxStreak
+          }));
+        }
+      } catch (error) {
+        console.error("Error checking streaks:", error);
+      }
+    };
+
     fetchUserData();
+    checkUserStreaks();
   }, [token]);
 
   useEffect(() => {
@@ -89,7 +106,7 @@ const ProfileLayout = () => {
         <div className="profile-info">
           <img src={userData.avatar} alt="User Avatar" className="profile-avatar" />
           <h2>{userData.name}</h2>
-          <p><MdEmail />   {userData.email}</p>
+          <p><MdEmail /> {userData.email}</p>
           <div className="tooltip">
             <p><FaStar /> {userData.points.toFixed(2)}</p>
             <span className="tooltip-text">Points</span>
@@ -99,6 +116,10 @@ const ProfileLayout = () => {
               <FaPuzzlePiece /> {problems.length}/{totalProblems}
             </p>
             <span className="tooltip-text">You solved {problems.length} problems out of {totalProblems}.</span>
+          </div>
+          <div className="streaks">
+            <p>Current Streak: {userData.streaks}</p>
+            <p>Max Streak: {userData.maxStreak}</p>
           </div>
           <div className="search-bar">
             <input

@@ -1,39 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import './Admin.css'; // Import the consolidated CSS file
+import './css/editproblems.css'; 
+import NavBar from "../NavBar/NavBar";
+import { AuthContext } from '../../context/AuthContext';
 
 const EditProblem = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [difficulty, setDifficulty] = useState('easy');
-  const [code, setCode] = useState('');
-  const [testCases, setTestCases] = useState('');
+  const [problem, setProblem] = useState({});
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
+    if (!token) return;
+
     // Fetch problem details from the server
-    axios.get(`/api/getProblemByObjectId/${id}`)
+    axios.get(`/api/getProblemByObjectId/${id}`, {
+      headers: { Authorization: token }
+    })
       .then(response => {
-        const problem = response.data;
-        setTitle(problem.title);
-        setDescription(problem.description);
-        setDifficulty(problem.difficulty);
-        setCode(problem.code);
-        setTestCases(problem.testCases.join('\n'));
+        setProblem(response.data);
       })
       .catch(error => console.error('Error fetching problem:', error));
-  }, [id]);
+  }, [id, token]);
+
+  const handleFieldChange = (field, value) => {
+    setProblem(prevProblem => ({ ...prevProblem, [field]: value }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const updatedProblem = { title, description, difficulty, code, testCases: testCases.split('\n') };
 
-    // Send updated problem to the server
-    axios.put(`/api/updateProblem/${id}`, updatedProblem)
-      .then(response => {
-        console.log('Problem updated:', response.data);
+    // Update each field separately
+    const updatePromises = Object.keys(problem).map(field => {
+      return axios.patch(`/api/updateProblemField/${id}`, { field, value: problem[field] }, {
+        headers: { Authorization: token }
+      });
+    });
+
+    Promise.all(updatePromises)
+      .then(responses => {
+        console.log('Problem updated:', responses);
         navigate('/admin/manage-problems');
       })
       .catch(error => console.error('Error updating problem:', error));
@@ -41,19 +48,33 @@ const EditProblem = () => {
 
   return (
     <div className="edit-problem">
+      <NavBar />
       <h1>Edit Problem</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Title</label>
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <input
+            type="text"
+            value={problem.title || ''}
+            onChange={(e) => handleFieldChange('title', e.target.value)}
+            required
+          />
         </div>
         <div>
           <label>Description</label>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
+          <textarea
+            value={problem.text || ''}
+            onChange={(e) => handleFieldChange('text', e.target.value)}
+            required
+          />
         </div>
         <div>
           <label>Difficulty</label>
-          <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} required>
+          <select
+            value={problem.difficulty || 'easy'}
+            onChange={(e) => handleFieldChange('difficulty', e.target.value)}
+            required
+          >
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
@@ -61,11 +82,17 @@ const EditProblem = () => {
         </div>
         <div>
           <label>Code</label>
-          <textarea value={code} onChange={(e) => setCode(e.target.value)} />
+          <textarea
+            value={problem.code || ''}
+            onChange={(e) => handleFieldChange('code', e.target.value)}
+          />
         </div>
         <div>
           <label>Test Cases (one per line)</label>
-          <textarea value={testCases} onChange={(e) => setTestCases(e.target.value)} />
+          <textarea
+            value={problem.testCases || ''}
+            onChange={(e) => handleFieldChange('testCases', e.target.value)}
+          />
         </div>
         <button type="submit">Update Problem</button>
       </form>

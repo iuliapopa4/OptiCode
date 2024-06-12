@@ -1,50 +1,68 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import CodeEditor from '../CodeEditor/CodeEditor';
 import { useParams } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import './problempage.css'; 
-import NavBar from "../NavBar/NavBar"
+import CodeEditor from '../CodeEditor/CodeEditor';
+import NavBar from "../NavBar/NavBar";
+import './problempage.css';
 
 const ProblemPage = () => {
   const { id: problemId } = useParams();
-  const [problem, setProblem] = useState(null);
   const { token, user } = useContext(AuthContext);
+  const [problem, setProblem] = useState(null);
   const [submissions, setSubmissions] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
 
   useEffect(() => {
-    console.log('Fetching problem details...');
     if (!problemId || !token) {
-      console.error('Problem ID or Auth token is missing');
       return;
     }
 
     axios.get(`/api/getProblem/${problemId}`, { headers: { Authorization: token } })
       .then(response => {
-        console.log('Problem details fetched:', response.data);
         setProblem(response.data);
       })
       .catch(error => {
         console.error('Error fetching problem:', error);
-        setProblem(null);
+      });
+
+    axios.get(`/api/comments/${problemId}`, { headers: { Authorization: token } })
+      .then(response => {
+        setComments(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching comments:', error);
       });
   }, [problemId, token]);
 
   useEffect(() => {
-    if (!problem || !token || !user._id) {
-      console.log('Waiting for problem details...');
+    if (problem && token && user._id) {
+      axios.get(`/api/submissions/${user._id}/${problem._id}`, { headers: { Authorization: token } })
+        .then(response => {
+          setSubmissions(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching submissions:', error);
+        });
+    }
+  }, [problem, token, user._id]);
+
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) {
       return;
     }
 
-    axios.get(`/api/submissions/${user._id}/${problem._id}`, { headers: { Authorization: token } })
+    axios.post(`/api/addComment/${problemId}`, { text: newComment }, { headers: { Authorization: token } })
       .then(response => {
-        console.log('Submissions fetched:', response.data);
-        setSubmissions(response.data);
+        setComments([response.data, ...comments]);
+        setNewComment('');
       })
       .catch(error => {
-        console.error('Error fetching submissions:', error);
+        console.error('Error adding comment:', error);
       });
-  }, [problem, token, user._id]);
+  };
 
   return (
     <div>
@@ -73,6 +91,25 @@ const ProblemPage = () => {
                 </li>
               );
             })}
+          </ul>
+        </div>
+        <div className="comments-section">
+          <h2>Comments</h2>
+          <form onSubmit={handleCommentSubmit}>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Leave a comment or hint..."
+            ></textarea>
+            <button type="submit">Submit</button>
+          </form>
+          <ul>
+            {comments.map((comment) => (
+              <li key={comment._id}>
+                <strong>{comment.userId.username}</strong> <span>{new Date(comment.createdAt).toLocaleString()}</span>
+                <p>{comment.text}</p>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

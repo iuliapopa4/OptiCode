@@ -2,7 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { AuthContext } from "../../context/AuthContext";
-import './Admin.css'; // Import the consolidated CSS file
+import './css/suggestedproblems.css'; // Import the consolidated CSS file
+import NavBar from "../NavBar/NavBar";
+
 
 const SuggestedProblems = () => {
   const [suggestedProblems, setSuggestedProblems] = useState([]);
@@ -58,6 +60,7 @@ const SuggestedProblems = () => {
 
   return (
     <div className="suggested-problems">
+      <NavBar />
       <h1>Suggested Problems</h1>
       <div className="filter-container">
         <select 

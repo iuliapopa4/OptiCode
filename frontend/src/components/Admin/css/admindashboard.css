@@ -1,0 +1,81 @@
+.admin-dashboard {
+    padding: 50px 100px 20px;
+    font-family: Arial, sans-serif;
+}
+
+.admin-dashboard h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.dashboard-metrics {
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: space-between;
+  margin-bottom: 30px;
+  margin-top: 100px;
+}
+
+.metric {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  width: 30%;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  margin-bottom: 20px; 
+}
+
+.metric:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+.metric h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #007bff;
+}
+
+.metric p {
+    font-size: 1.2em;
+    color: #555;
+}
+
+.metric .metric-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 2em;
+    color: #007bff;
+    opacity: 0.2;
+}
+
+.dashboard-links ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.dashboard-links li {
+    margin: 10px 0;
+}
+
+.dashboard-links a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1.2em;
+    transition: color 0.2s;
+}
+
+.dashboard-links a:hover {
+    color: #0056b3;
+}
+
+  

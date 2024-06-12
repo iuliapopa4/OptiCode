@@ -29,7 +29,6 @@ const problemController = {
     }
   },
 
-
   getAllProblems: async (req, res) => {
     try {
       const problems = await Problem.find({});
@@ -74,22 +73,27 @@ const problemController = {
     }
   },
 
-  updateProblemById: async (req, res) => {
+  updateProblemField: async (req, res) => {
     try {
-      const updatedProblem = await Problem.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
+      const { field, value } = req.body;
+      const updatedProblem = await Problem.findByIdAndUpdate(
+        req.params.id,
+        { [field]: value },
+        { new: true }
+      );
       if (!updatedProblem) {
         return res.status(404).json({ error: 'Problem not found' });
       }
       res.json(updatedProblem);
     } catch (error) {
-      console.error(error);
+      console.error('Error updating problem field:', error);
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
 
-  deleteProblemById: async (req, res) => {
+  deleteProblemByObjectId: async (req, res) => {
     try {
-      const deletedProblem = await Problem.findOneAndDelete({ id: req.params.id });
+      const deletedProblem = await Problem.findByIdAndDelete(req.params.id);
       if (!deletedProblem) {
         return res.status(404).json({ error: 'Problem not found' });
       }

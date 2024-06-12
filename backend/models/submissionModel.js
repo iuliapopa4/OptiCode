@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const submissionSchema = new mongoose.Schema({
   userId: { 
     type: mongoose.Schema.Types.ObjectId, 
@@ -20,7 +19,7 @@ const submissionSchema = new mongoose.Schema({
   score: { 
     type: String, 
   },
-  result:{
+  result: {
     type: String,
   },
   passedTests: {
@@ -29,6 +28,11 @@ const submissionSchema = new mongoose.Schema({
   totalTests: {
     type: Number,
   },
+  testResults: [{
+    testCase: String,
+    passed: Boolean,
+    errorMessage: String
+  }],
   createdAt: { 
     type: Date, 
     default: Date.now 

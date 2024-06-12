@@ -12,12 +12,16 @@ import AddProblem from "./components/Problem/AddProblem";
 import EditProfile from "./components/EditProfile/EditProfile";
 import Leaderboard from "./components/Leaderboard/Leaderboard";
 import Forgot from "./components/Forgot/Forgot";
+import Forum from "./components/Forum/Forum";
+import ForumPost from "./components/Forum/ForumPost";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import ManageProblems from "./components/Admin/ManageProblems";
 import CreateProblem from "./components/Admin/createProblem";
 import EditProblem from "./components/Admin/editProblem";
 import SuggestedProblems from "./components/Admin/suggestedProblems";
 import EditSuggestedProblem from "./components/Admin/editSuggestedProblem";
+import AdminForum from "./components/Admin/AdminForum";
+import AdminForumPost from "./components/Admin/AdminForumPost";
 import ManageUsers from "./components/Admin/ManageUsers";
 import { AuthContext } from "./context/AuthContext";
 import axios from "axios";
@@ -62,6 +66,7 @@ function App() {
           });
           console.log('Streaks checked:', res.data);
           dispatch({ type: "UPDATE_STREAKS", payload: res.data.streaks });
+          dispatch({ type: "UPDATE_MAXSTREAK", payload: res.data.maxStreak });
         } catch (error) {
           console.error('Error checking streaks:', error);
         }
@@ -76,7 +81,7 @@ function App() {
         <Route path="/" element={isLoggedIn ? <HomeLayout /> : <AuthLayout />} />
         <Route path="/auth/reset-password/:token" element={<ResetLayout />} />
         <Route path="/api/auth/activate/:activation_token" element={<ActivateLayout />} />
-        <Route path="/profile" element={<ProfileLayout />} />
+        <Route path="/profile" element= {<ProfileLayout />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/problems/:id" element={<ProblemPage />} />
         <Route path="/problems" element={<ProblemList />} />
@@ -84,24 +89,19 @@ function App() {
         <Route path="/submission/:id" element={<Submission />} />
         <Route path="/auth/forgot-password" element={<Forgot />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
-        
+        <Route path="/forum" element={<Forum />} />
+        <Route path="/forum/posts/:id" element={<ForumPost />} />
+
         {/* Admin routes */}
-
-        <Route path="/admin/dashboard" element = {<AdminDashboard/>}/>
-        <Route path="/admin/manage-problems" element={<ManageProblems />} />
-        <Route path="/admin/addProblem" element={<CreateProblem />} />
-        <Route path="/admin/editProblem/:id" element={<EditProblem />} />
-        <Route path="/admin/manage-users" element={<ManageUsers />} />
-        <Route path="/admin/suggested-problems" element={<SuggestedProblems />} />
-        <Route path="/admin/editSuggestedProblem/:id" element={<EditSuggestedProblem />} />
-
-
-
-        {/* <ProtectedRoute path="/admin/dashboard" element={<AdminDashboard/>} isLoggedIn={isLoggedIn} user={user} adminOnly={true} /> */}
-        {/* <ProtectedRoute path="/admin/manage-problems" component={ManageProblems} isLoggedIn={isLoggedIn} user={user} adminOnly={true} />
-        <ProtectedRoute path="/admin/suggested-problems" component={ReviewSuggestedProblems} isLoggedIn={isLoggedIn} user={user} adminOnly={true} />
-        <ProtectedRoute path="/admin/manage-users" component={ManageUsers} isLoggedIn={isLoggedIn} user={user} adminOnly={true} />
-        <ProtectedRoute path="/admin/analytics" component={SiteAnalytics} isLoggedIn={isLoggedIn} user={user} adminOnly={true} /> Optional */}
+        <Route path="/admin/dashboard" element={<ProtectedRoute component={AdminDashboard} adminOnly />} />
+        <Route path="/admin/manage-problems" element={<ProtectedRoute component={ManageProblems} adminOnly />} />
+        <Route path="/admin/addProblem" element={<ProtectedRoute component={CreateProblem} adminOnly />} />
+        <Route path="/admin/editProblem/:id" element={<ProtectedRoute component={EditProblem} adminOnly />} />
+        <Route path="/admin/manage-users" element={<ProtectedRoute component={ManageUsers} adminOnly />} />
+        <Route path="/admin/suggested-problems" element={<ProtectedRoute component={SuggestedProblems} adminOnly />} />
+        <Route path="/admin/editSuggestedProblem/:id" element={<ProtectedRoute component={EditSuggestedProblem} adminOnly />} />
+        <Route path="/admin/forum" element={<ProtectedRoute component={AdminForum} adminOnly />} />
+        <Route path="/admin/forum/posts/:id" element={<ProtectedRoute component={AdminForumPost} adminOnly />} />
       </Routes>
     </Router>
   );

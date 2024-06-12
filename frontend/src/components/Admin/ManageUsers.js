@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import './Admin.css'; // Import the consolidated CSS file
+import './css/manageusers.css'; // Import the consolidated CSS file
 import { AuthContext } from "../../context/AuthContext";
+import NavBar from "../NavBar/NavBar";
+
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -63,6 +65,7 @@ const ManageUsers = () => {
 
   return (
     <div className="manage-users">
+      <NavBar />
       <h1>Manage Users</h1>
       <div className="filters">
         <input

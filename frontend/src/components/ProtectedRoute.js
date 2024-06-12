@@ -1,21 +1,16 @@
-// import React from 'react';
-// import { Route, Navigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+import {  Navigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
-// const ProtectedRoute = ({ element: Component, isLoggedIn, user, adminOnly = false, ...rest }) => {
-//   return (
-//     <Route
-//       {...rest}
-//       element={(props) => {
-//         if (!isLoggedIn) {
-//           return <Navigate to="/" />;
-//         }
-//         if (adminOnly && user.role !== 'admin') {
-//           return <Navigate to="/" />;
-//         }
-//         return <Component {...props} />;
-//       }}
-//     />
-//   );
-// };
+const ProtectedRoute = ({ component: Component, adminOnly, ...rest }) => {
+  const { user } = useContext(AuthContext);
 
-// export default ProtectedRoute;
+
+  if (adminOnly && user.role !== 'admin') {
+    return <Navigate to="/" />;
+  }
+
+  return <Component {...rest} />;
+};
+
+export default ProtectedRoute;

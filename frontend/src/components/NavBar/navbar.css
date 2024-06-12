@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 2rem;
-  background-color: #5a82a8; 
-  color: #FFFFFF;
+  background-color: #292B2C; /* Changed to white */
+  color: #fff; /* Changed to dark gray for contrast */
   width: 100%;
   position: fixed;
   top: 0;
@@ -21,11 +21,42 @@
 .navbar__logo img {
   width: 45px; 
   cursor: pointer;
-  padding:2px;
+  padding: 2px;
 }
 
 .navbar__logo, .navbar__problems, .navbar__streaks, .navbar__avatar {
   margin: 0 1rem;
+}
+
+.navbar__menu {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__menu.active {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background-color: #ffffff; /* Changed to white */
+  padding: 20px;
+}
+
+.navbar__mobile-icon {
+  display: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.navbar__problems, .navbar__streaks, .navbar__avatar {
+  color: #fff; /* Changed to dark gray */
+  cursor: pointer;
+}
+
+.navbar__problems:hover, .navbar__streaks:hover {
+  text-decoration: underline; 
 }
 
 .navbar__search input {
@@ -80,7 +111,7 @@
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  padding:2px;
+  padding: 2px;
 }
 
 .avatar-dropdown {
@@ -100,18 +131,19 @@
 .avatar-dropdown li {
   padding: 10px 20px;
   cursor: pointer;
-  color: #5a82a8; 
+  color: #333333; /* Changed to dark gray */
 }
 
 .avatar-dropdown li:hover {
   background-color: #E1E1E1; 
 }
 
-.navbar__problems, .navbar__streaks, .navbar__avatar {
-  color: #FFFFFF; 
-  cursor: pointer;
-}
-
-.navbar__problems:hover, .navbar__streaks:hover {
-  text-decoration: underline; 
+/* Mobile view adjustments */
+@media (max-width: 768px) {
+  .navbar__menu {
+    display: none;
+  }
+  .navbar__mobile-icon {
+    display: block;
+  }
 }

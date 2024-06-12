@@ -4,11 +4,13 @@ import Avatar from '../Avatar/Avatar';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { SiFireship } from 'react-icons/si';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import './navbar.css';
 
 const Navbar = () => {
   const { user, dispatch } = useContext(AuthContext);
   const [isAvatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async (e) => {
@@ -27,6 +29,10 @@ const Navbar = () => {
     setAvatarDropdownOpen(!isAvatarDropdownOpen);
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   const goHome = () => {
     navigate('/');
   };
@@ -41,11 +47,15 @@ const Navbar = () => {
 
   const goProblems = () => {
     navigate('/problems');
-  }
+  };
 
   const goLeaderboard = () => {
     navigate('/leaderboard');
-  }
+  };
+
+  const goForum = () => {
+    navigate('/forum');
+  };
 
   return (
     <nav className="navbar">
@@ -53,11 +63,19 @@ const Navbar = () => {
         <div className="navbar__logo" onClick={goHome}>
           <img src={require("../../img/logo.png")} alt="logo" />
         </div>
-        <div className="navbar__problems" onClick={goProblems}>
-          Problems
+        <div className={`navbar__menu ${isMobileMenuOpen ? 'active' : ''}`}>
+          <div className="navbar__problems" onClick={goProblems}>
+            Problems
+          </div>
+          <div className="navbar__problems" onClick={goLeaderboard}>
+            Leaderboard
+          </div>
+          <div className="navbar__problems" onClick={goForum}>
+            Forum
+          </div>
         </div>
-        <div className="navbar__leaderboard" onClick={goLeaderboard}>
-          Leaderboard
+        <div className="navbar__mobile-icon" onClick={toggleMobileMenu}>
+          {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
         </div>
       </div>
       <div className="navbar__right">
