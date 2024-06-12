@@ -2,24 +2,30 @@ import { createContext, useReducer, useEffect } from "react";
 import AuthReducer from "./AuthReducer";
 
 const INITIAL_STATE = {
-  user: [],
+  user: null,
   isLoggedIn: false,
-  token: "",
+  token: localStorage.getItem("token") || "",
 };
 
 export const AuthContext = createContext(INITIAL_STATE);
 
 export const AuthContextProvider = ({ children }) => {
-  // Use reducer to manage state with AuthReducer
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
 
-  // Check for token in local storage 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       dispatch({ type: "GET_TOKEN", payload: storedToken });
     }
   }, []);
+
+  useEffect(() => {
+    if (state.token) {
+      localStorage.setItem("token", state.token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [state.token]);
 
   return (
     <AuthContext.Provider

@@ -12,7 +12,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
     python: `print("Hello, Python!")\n`
   };
 
-  const { token } = useContext(AuthContext);
+  const { token, dispatch } = useContext(AuthContext);  // Ensure you have access to dispatch for token management
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [output, setOutput] = useState('');
@@ -23,7 +23,6 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
 
   useEffect(() => {
     setEditorContent(languageTemplates[language]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
   const handleLanguageChange = (e) => {
@@ -37,15 +36,15 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
     setError('');
     setOutput('');
     setIsError(false);
-  
+
     try {
       const compileResponse = await axios.post('/api/compile', {
         code: editorContent,
         language,
         problemId,
         testCases
-      }, { headers: { Authorization: `Bearer ${token}` } });
-  
+      }, { headers: { Authorization: token } });
+
       if (compileResponse.data.success === false) {
         setError(compileResponse.data.error);
         setIsError(true);
@@ -54,37 +53,41 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
         const formattedScore = score.toFixed(2);
         setOutput(`Score: ${formattedScore}%`);
         setIsError(false);
-  
+
         const submissionResponse = await axios.post(`/api/submitCode/${problemId}`, {
-          userId,
           code: editorContent,
           language,
-          result: `Score: ${formattedScore}%`,
-          testCasesPassed: passedTests,
-          totalTestCases: totalTests
-        }, { headers: { Authorization: `${token}` } });
-  
+          score: formattedScore,
+          passedTests,
+          totalTests,
+        }, { headers: { Authorization: token } });
+
         console.log('Submission saved:', submissionResponse.data);
-  
+
         // Assuming the streaks are updated and returned in the response
-        const streakResponse = await axios.get('/api/streaks', { headers: { Authorization: `Bearer ${token}` } });
+        const streakResponse = await axios.get('/api/checkStreaks', { headers: { Authorization: {token} } });
         console.log('Streaks updated:', streakResponse.data);
       }
     } catch (error) {
-      console.error('Submission error:', error);
-      setError(error.response?.data.error || 'Error communicating with the server');
+      if (error.response && error.response.status === 401) {
+        // Handle token expiration
+        dispatch({ type: 'LOGOUT' });
+        setError('Session expired. Please log in again.');
+      } else {
+        console.error('Submission error:', error);
+        setError(error.response?.data.error || 'Error communicating with the server');
+      }
       setIsError(true);
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleAnalyzeCode = async () => {
     try {
       const response = await axios.post('/api/analyze', {
         code: editorContent
-      }, { headers: { Authorization: `${token}` } });
+      }, { headers: { Authorization: `Bearer ${token}` } });
       setFeedback(response.data.feedback);
     } catch (error) {
       setFeedback(`Error analyzing code: ${error.response?.data.error || error.message}`);

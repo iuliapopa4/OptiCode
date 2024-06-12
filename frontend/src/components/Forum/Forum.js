@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { AuthContext } from "../../context/AuthContext"; 
+import { AuthContext } from "../../context/AuthContext";
 import NavBar from "../NavBar/NavBar";
 import { FaTrash } from 'react-icons/fa';
 import CreatePostModal from '../Forum/CreatePostModal';
@@ -9,7 +9,7 @@ import "../Forum/forum.css"
 
 const Forum = () => {
   const [posts, setPosts] = useState([]);
-  const { user, token } = useContext(AuthContext); // Get user and token from auth context
+  const { user, token } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const Forum = () => {
   const handleDeletePost = async (postId) => {
     try {
       await axios.delete(`/api/forum/posts/${postId}`, {
-        headers: { Authorization: token }
+        headers: { Authorization: `${token}` }
       });
       setPosts(posts.filter(post => post._id !== postId));
     } catch (error) {
@@ -42,14 +42,15 @@ const Forum = () => {
     setIsModalOpen(false);
   };
 
-  const handleNewPost = async (title, content) => {
+  const handleNewPost = async (title, content, code) => {
     try {
       const response = await axios.post('/api/forum/posts', {
         title,
         content,
+        code,
         authorId: user._id
       }, {
-        headers: { Authorization: token }
+        headers: { Authorization: `${token}` }
       });
       setPosts([response.data, ...posts]);
       closeModal();

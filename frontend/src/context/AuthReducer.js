@@ -14,6 +14,7 @@ const AuthReducer = (state, action) => {
       return {
         ...state,
         user: action.payload,
+        isLoggedIn: true,
       };
     case "UPDATE_STREAKS":
       return {

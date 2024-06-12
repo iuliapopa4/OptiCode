@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext'; 
+import { AuthContext } from '../../context/AuthContext';
 import NavBar from "../NavBar/NavBar";
 import { FaTrash } from 'react-icons/fa';
 import "../Forum/forum.css";
@@ -18,7 +18,7 @@ const ForumPost = () => {
     if (!id || !token) return;
 
     axios.get(`/api/forum/posts/${id}`, {
-      headers: { Authorization: token }
+      headers: { Authorization: `${token}` }
     })
     .then(response => {
       console.log("Post retrieved from server:", response.data);
@@ -31,7 +31,7 @@ const ForumPost = () => {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (!comment.trim() || !user?._id) return;
+    if (!comment.trim() && !code.trim()) return; // Check if both comment and code are empty
 
     try {
       const response = await axios.post(`/api/forum/posts/${id}/comments`, {
@@ -39,7 +39,7 @@ const ForumPost = () => {
         code: code,
         authorId: user._id
       }, {
-        headers: { Authorization: token }
+        headers: { Authorization: `${token}` }
       });
       console.log("Comment submitted, updated post:", response.data);
       setPost(response.data);
@@ -53,7 +53,7 @@ const ForumPost = () => {
   const handleDeleteComment = async (commentId) => {
     try {
       await axios.delete(`/api/forum/posts/${id}/comments/${commentId}`, {
-        headers: { Authorization: token }
+        headers: { Authorization: `${token}` }
       });
       setPost({
         ...post,
@@ -67,7 +67,7 @@ const ForumPost = () => {
   const handleDeletePost = async () => {
     try {
       await axios.delete(`/api/forum/posts/${id}`, {
-        headers: { Authorization: token }
+        headers: { Authorization: `${token}` }
       });
       navigate('/forum');
     } catch (error) {
@@ -85,7 +85,7 @@ const ForumPost = () => {
         <p>By {post.authorId && (post.authorId.username || post.authorId.name) ? post.authorId.username || post.authorId.name : 'Unknown Author'} on {new Date(post.timestamp).toLocaleString()}</p>
         {(user && (user._id === post.authorId._id || user.role === 'admin')) && (
           <button onClick={handleDeletePost} className="deleteButton">
-            <FaTrash /> 
+            <FaTrash />
           </button>
         )}
       </div>

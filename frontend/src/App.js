@@ -1,5 +1,5 @@
-import React, { useEffect, useContext } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect, useContext, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import ActivateLayout from "./Layouts/ActivateLayout/ActivateLayout";
 import AuthLayout from "./Layouts/AuthLayout/AuthLayout";
 import ProfileLayout from "./Layouts/ProfileLayout/ProfileLayout";
@@ -29,36 +29,49 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const { dispatch, token, isLoggedIn, user } = useContext(AuthContext);
+  const [streaksChecked, setStreaksChecked] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // fetch access token
   useEffect(() => {
     const _appSignging = localStorage.getItem("_appSignging");
     if (_appSignging) {
       const getToken = async () => {
-        const res = await axios.post("/api/auth/access", null);
-        dispatch({ type: "GET_TOKEN", payload: res.data.ac_token });
+        try {
+          const res = await axios.post("/api/auth/access", null);
+          dispatch({ type: "GET_TOKEN", payload: res.data.ac_token });
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching token", error);
+          setLoading(false);
+        }
       };
       getToken();
+    } else {
+      setLoading(false);
     }
   }, [dispatch, isLoggedIn]);
 
-  // fetch user data when token changes
   useEffect(() => {
     if (token) {
       const getUser = async () => {
-        dispatch({ type: "SIGNING" });
-        const res = await axios.get("/api/auth/user", {
-          headers: { Authorization: token },
-        });
-        dispatch({ type: "GET_USER", payload: res.data });
+        try {
+          dispatch({ type: "SIGNING" });
+          const res = await axios.get("/api/auth/user", {
+            headers: { Authorization: token },
+          });
+          dispatch({ type: "GET_USER", payload: res.data });
+        } catch (error) {
+          console.error("Error fetching user data", error);
+          navigate('/');
+        }
       };
       getUser();
     }
-  }, [dispatch, token]);
+  }, [dispatch, token, navigate]);
 
-  // check streaks when token and user changes
   useEffect(() => {
-    if (token && user) {
+    if (token && user && !streaksChecked) {
       const checkStreaks = async () => {
         try {
           const res = await axios.get("/api/checkStreaks", {
@@ -67,43 +80,45 @@ function App() {
           console.log('Streaks checked:', res.data);
           dispatch({ type: "UPDATE_STREAKS", payload: res.data.streaks });
           dispatch({ type: "UPDATE_MAXSTREAK", payload: res.data.maxStreak });
+          setStreaksChecked(true);
         } catch (error) {
           console.error('Error checking streaks:', error);
         }
       };
       checkStreaks();
     }
-  }, [token, user, dispatch]);
+  }, [token, user, dispatch, streaksChecked]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={isLoggedIn ? <HomeLayout /> : <AuthLayout />} />
-        <Route path="/auth/reset-password/:token" element={<ResetLayout />} />
-        <Route path="/api/auth/activate/:activation_token" element={<ActivateLayout />} />
-        <Route path="/profile" element= {<ProfileLayout />} />
-        <Route path="/editprofile" element={<EditProfile />} />
-        <Route path="/problems/:id" element={<ProblemPage />} />
-        <Route path="/problems" element={<ProblemList />} />
-        <Route path="/addProblem" element={<AddProblem />} />
-        <Route path="/submission/:id" element={<Submission />} />
-        <Route path="/auth/forgot-password" element={<Forgot />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/forum" element={<Forum />} />
-        <Route path="/forum/posts/:id" element={<ForumPost />} />
+    <Routes>
+      <Route path="/" element={isLoggedIn ? <HomeLayout /> : <AuthLayout />} />
+      <Route path="/auth/reset-password/:token" element={<ResetLayout />} />
+      <Route path="/api/auth/activate/:activation_token" element={<ActivateLayout />} />
+      <Route path="/profile" element={isLoggedIn ? <ProfileLayout /> : <AuthLayout />} />
+      <Route path="/editprofile" element={isLoggedIn ? <EditProfile /> : <AuthLayout />} />
+      <Route path="/problems/:id" element={isLoggedIn ? <ProblemPage /> : <AuthLayout />} />
+      <Route path="/problems" element={isLoggedIn ? <ProblemList /> : <AuthLayout />} />
+      <Route path="/addProblem" element={isLoggedIn ? <AddProblem /> : <AuthLayout />} />
+      <Route path="/submission/:id" element={isLoggedIn ? <Submission /> : <AuthLayout />} />
+      <Route path="/auth/forgot-password" element={<Forgot />} />
+      <Route path="/leaderboard" element={isLoggedIn ? <Leaderboard /> : <AuthLayout />} />
+      <Route path="/forum" element={isLoggedIn ? <Forum /> : <AuthLayout />} />
+      <Route path="/forum/posts/:id" element={isLoggedIn ? <ForumPost /> : <AuthLayout />} />
 
-        {/* Admin routes */}
-        <Route path="/admin/dashboard" element={<ProtectedRoute component={AdminDashboard} adminOnly />} />
-        <Route path="/admin/manage-problems" element={<ProtectedRoute component={ManageProblems} adminOnly />} />
-        <Route path="/admin/addProblem" element={<ProtectedRoute component={CreateProblem} adminOnly />} />
-        <Route path="/admin/editProblem/:id" element={<ProtectedRoute component={EditProblem} adminOnly />} />
-        <Route path="/admin/manage-users" element={<ProtectedRoute component={ManageUsers} adminOnly />} />
-        <Route path="/admin/suggested-problems" element={<ProtectedRoute component={SuggestedProblems} adminOnly />} />
-        <Route path="/admin/editSuggestedProblem/:id" element={<ProtectedRoute component={EditSuggestedProblem} adminOnly />} />
-        <Route path="/admin/forum" element={<ProtectedRoute component={AdminForum} adminOnly />} />
-        <Route path="/admin/forum/posts/:id" element={<ProtectedRoute component={AdminForumPost} adminOnly />} />
-      </Routes>
-    </Router>
+      <Route path="/admin/dashboard" element={<ProtectedRoute component={AdminDashboard} adminOnly />} />
+      <Route path="/admin/manage-problems" element={<ProtectedRoute component={ManageProblems} adminOnly />} />
+      <Route path="/admin/addProblem" element={<ProtectedRoute component={CreateProblem} adminOnly />} />
+      <Route path="/admin/editProblem/:id" element={<ProtectedRoute component={EditProblem} adminOnly />} />
+      <Route path="/admin/manage-users" element={<ProtectedRoute component={ManageUsers} adminOnly />} />
+      <Route path="/admin/suggested-problems" element={<ProtectedRoute component={SuggestedProblems} adminOnly />} />
+      <Route path="/admin/editSuggestedProblem/:id" element={<ProtectedRoute component={EditSuggestedProblem} adminOnly />} />
+      <Route path="/admin/forum" element={<ProtectedRoute component={AdminForum} adminOnly />} />
+      <Route path="/admin/forum/posts/:id" element={<ProtectedRoute component={AdminForumPost} adminOnly />} />
+    </Routes>
   );
 }
 

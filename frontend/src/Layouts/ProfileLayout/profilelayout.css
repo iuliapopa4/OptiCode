@@ -233,3 +233,53 @@ a:hover {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+/* Level slider styles */
+.level-slider {
+  width: 50%;
+  margin: 20px 0;
+}
+
+.level-info {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  align-items: center;
+  font-size: 18px; 
+}
+
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.slider-progress {
+  background-color: #007bff;
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+}
+
+.slider-text {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #3a3a3a;
+  font-weight: bold;
+}
+
+.level-indicator {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+}
+

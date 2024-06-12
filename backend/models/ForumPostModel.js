@@ -20,16 +20,18 @@ const forumPostSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true
+    required: false,
+    default: " ",
   },
   code: {
     type: String,
-    required: false
+    required: false,
+    default: " ",
   },
   authorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
   },
   comments: [commentSchema],
   timestamp: {

@@ -10,26 +10,26 @@ const CreatePostModal = ({ isOpen, onRequestClose }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [code, setCode] = useState('');
-  const { user } = useContext(AuthContext); // Get user information from the auth context
-
-  // Log user object to verify retrieval
-  console.log('User object from context:', user);
+  const { user, token } = useContext(AuthContext); // Get user information and token from the auth context
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      // Log user ID before making the request
-      console.log('User ID:', user?._id);
 
+    // Client-side validation
+    if (!title || !content) {
+      alert('Title and content are required.');
+      return;
+    }
+
+    try {
       const response = await axios.post('/api/forum/posts', {
         title,
         content,
-        code, // Include the code in the request
-        authorId: user?._id, // Use the user ID from the auth context
+        code,
+        authorId: user._id
+      }, {
+        headers: { Authorization: `${token}` } // Include the token in the request headers
       });
-
-      // Log the response from the server
-      console.log('Response from server:', response.data);
 
       onRequestClose();
       window.location.reload(); // Reload the page to show the new post

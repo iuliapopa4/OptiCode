@@ -13,29 +13,20 @@ const submissionController = {
       const { code, language } = req.body;
 
       if (!code.trim()) {
-        console.error('Code is empty');
         return res.status(400).json({ error: 'Code cannot be empty.' });
       }
 
-      console.log('Received data:', { userId, problemId, code, language });
-
       if (!mongoose.Types.ObjectId.isValid(problemId)) {
-        console.error('Invalid problem ID format:', problemId);
         return res.status(400).json({ error: 'Invalid problem ID format' });
       }
 
       const problem = await Problem.findById(problemId);
       if (!problem) {
-        console.error('Problem not found with ID:', problemId);
         return res.status(404).json({ error: 'Problem not found' });
       }
 
-      console.log('Evaluating solution for problem:', problem);
-
       const evaluation = await evaluateSolution(code, problemId);
       const { score, totalTests, passedTests, testResults } = evaluation;
-
-      console.log('Evaluation result:', evaluation);
 
       const result = `Score: ${score.toFixed(2)}%\nPassed ${passedTests} out of ${totalTests} tests.`;
 
@@ -57,15 +48,12 @@ const submissionController = {
       const today = new Date().setUTCHours(0, 0, 0, 0);
       const lastSubmissionDate = user.lastSubmissionDate ? new Date(user.lastSubmissionDate).setUTCHours(0, 0, 0, 0) : null;
 
-      if (lastSubmissionDate === today - 86400000) {
-        // If the last submission was yesterday, increment the streak
+      if (lastSubmissionDate && lastSubmissionDate === today - 86400000) {
         user.streaks += 1;
       } else if (lastSubmissionDate !== today) {
-        // If the last submission was not today, reset the streak to 1
         user.streaks = 1;
       }
 
-      // Update max streak if current streak is higher
       if (user.streaks > user.maxStreak) {
         user.maxStreak = user.streaks;
       }

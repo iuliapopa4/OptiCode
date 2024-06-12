@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema(
       type: Number, 
       default: 0 
     },
+    level: { 
+      type: Number, 
+      default: 0 
+    },
     highestScores: [{
       problemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Problem' },
       score: { type: Number }

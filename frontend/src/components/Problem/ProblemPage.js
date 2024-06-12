@@ -13,31 +13,29 @@ const ProblemPage = () => {
   const [submissions, setSubmissions] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!problemId || !token) {
-      return;
-    }
+    const fetchData = async () => {
+      if (!problemId || !token) return;
 
-    axios.get(`/api/getProblem/${problemId}`, { headers: { Authorization: token } })
-      .then(response => {
-        setProblem(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching problem:', error);
-      });
+      try {
+        const problemResponse = await axios.get(`/api/getProblemByObjectId/${problemId}`, {
+          headers: { Authorization: token }
+        });
+        setProblem(problemResponse.data);
+      } catch (error) {
+        console.error('Error fetching problem data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    axios.get(`/api/comments/${problemId}`, { headers: { Authorization: token } })
-      .then(response => {
-        setComments(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching comments:', error);
-      });
+    fetchData();
   }, [problemId, token]);
 
   useEffect(() => {
-    if (problem && token && user._id) {
+    if (problem && token && user?._id) {
       axios.get(`/api/submissions/${user._id}/${problem._id}`, { headers: { Authorization: token } })
         .then(response => {
           setSubmissions(response.data);
@@ -46,13 +44,11 @@ const ProblemPage = () => {
           console.error('Error fetching submissions:', error);
         });
     }
-  }, [problem, token, user._id]);
+  }, [problem, token, user]);
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
-    if (!newComment.trim()) {
-      return;
-    }
+    if (!newComment.trim()) return;
 
     axios.post(`/api/addComment/${problemId}`, { text: newComment }, { headers: { Authorization: token } })
       .then(response => {
@@ -63,6 +59,14 @@ const ProblemPage = () => {
         console.error('Error adding comment:', error);
       });
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <div>Please log in to view this page.</div>;
+  }
 
   return (
     <div>
@@ -76,7 +80,7 @@ const ProblemPage = () => {
               <CodeEditor problemId={problem._id} testCases={problem.examples} userId={user._id} />
             </div>
           ) : (
-            <p>Loading...</p>
+            <p>Loading problem...</p>
           )}
         </div>
         <div className="submissions-section">

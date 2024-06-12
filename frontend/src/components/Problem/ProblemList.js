@@ -101,7 +101,7 @@ const ProblemList = () => {
         <ul>
           {filteredProblems.map(problem => (
             <li key={problem._id} className={getBorderColor(problem._id)}>
-              <Link to={`/problems/${problem.id}`}>
+              <Link to={`/problems/${problem._id}`}>
                 <div className="problem-info">
                   <h3>{problem.title}</h3>
                   <p>{problem.statement}</p>

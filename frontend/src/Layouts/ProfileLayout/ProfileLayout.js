@@ -99,6 +99,20 @@ const ProfileLayout = () => {
     problem.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Calculate level and progress dynamically
+  const getLevelAndProgress = (points) => {
+    const level = Math.floor(Math.sqrt(points / 100));
+    const nextLevelPoints = 100 * Math.pow(level + 1, 2);
+    const currentLevelPoints = 100 * Math.pow(level, 2);
+    const pointsNeeded = nextLevelPoints - points;
+    const progress = ((points - currentLevelPoints) / (nextLevelPoints - currentLevelPoints)) * 100;
+    const pointsInCurrentLevel = points - currentLevelPoints;
+    const pointsForNextLevel = nextLevelPoints - currentLevelPoints;
+    return { level, progress, pointsInCurrentLevel, pointsForNextLevel };
+  };
+
+  const { level, progress, pointsInCurrentLevel, pointsForNextLevel } = getLevelAndProgress(userData ? userData.points : 0);
+
   return (
     <div className="profile-layout">
       <NavBar />
@@ -106,6 +120,16 @@ const ProfileLayout = () => {
         <div className="profile-info">
           <img src={userData.avatar} alt="User Avatar" className="profile-avatar" />
           <h2>{userData.name}</h2>
+          {/* Level slider */}
+          <div className="level-slider">
+            <div className="level-info">
+              <p>Level {level}</p>
+            </div>
+            <div className="slider-container">
+              <div className="slider-progress" style={{ width: `${progress}%` }}></div>
+              <div className="slider-text">{pointsInCurrentLevel}/{pointsForNextLevel}</div>
+            </div>
+          </div>
           <p><MdEmail /> {userData.email}</p>
           <div className="tooltip">
             <p><FaStar /> {userData.points.toFixed(2)}</p>
@@ -121,6 +145,7 @@ const ProfileLayout = () => {
             <p>Current Streak: {userData.streaks}</p>
             <p>Max Streak: {userData.maxStreak}</p>
           </div>
+
           <div className="search-bar">
             <input
               type="text"

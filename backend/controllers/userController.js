@@ -7,6 +7,15 @@ const User = require("../models/userModel");
 const Problem = require('../models/problemModel');
 const Submission = require('../models/submissionModel'); 
 
+const calculateLevel = (points) => {
+  const level = Math.floor(0.1 * Math.sqrt(points));
+  const nextLevel = level + 1;
+  const pointsForNextLevel = Math.pow(nextLevel / 0.1, 2);
+  const pointsNeeded = pointsForNextLevel - points;
+  return { level, pointsNeeded };
+};
+
+
 const userController = {
   register: async (req, res) => {
     try {
@@ -177,30 +186,30 @@ const userController = {
     }
   },
 
-  updateUserPoints: async (userId, problemId, newScore) => {
+  updateUserPoints : async (userId, problemId, newScore) => {
     try {
       const user = await User.findById(userId);
       const problem = await Problem.findById(problemId);
-
+  
       if (!user || !problem) {
         throw new Error('User or Problem not found');
       }
-
+  
       newScore = parseFloat(newScore.toFixed(2)); // Ensure newScore is a floating-point number with 2 decimal places
       let points = newScore;
-
+  
       if (problem.difficulty === 'medium') {
         points *= 2;
       } else if (problem.difficulty === 'hard') {
         points *= 3;
       }
-
+  
       points = parseFloat(points.toFixed(2)); // Ensure points is a floating-point number with 2 decimal places
-
+  
       const existingScore = user.highestScores.find(
         (entry) => entry.problemId.toString() === problemId.toString()
       );
-
+  
       if (!existingScore) {
         user.highestScores.push({ problemId, score: newScore });
         user.points += points;
@@ -210,16 +219,20 @@ const userController = {
         user.points += points; // Add new points
         existingScore.score = newScore;
       }
-
+  
       user.points = parseFloat(user.points.toFixed(2)); // Ensure user.points is a floating-point number with 2 decimal places
-
+  
+      // Update user level based on new points
+      const { level, pointsNeeded } = calculateLevel(user.points);
+      user.level = level;
+  
       await user.save();
-      return user.points;
+      return { points: user.points, level, pointsNeeded };
     } catch (error) {
       console.error('Error updating user points:', error);
       throw error;
     }
-  },
+  },  
   
   getUserProfile: async (req, res) => {
     try {
@@ -258,6 +271,7 @@ const userController = {
         email: user.email,
         avatar: user.avatar,
         points: user.points,
+        level: user.level, // Include user level in response
         solvedProblems,
         submissions: user.submissions,
         streaks: user.streaks,
@@ -268,6 +282,7 @@ const userController = {
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
+  
   
   
 
@@ -286,20 +301,21 @@ const userController = {
       const userId = req.user.id;
       const user = await User.findById(userId);
   
-      const today = new Date();
-      today.setUTCHours(0, 0, 0, 0);
-  
+      const today = new Date().setUTCHours(0, 0, 0, 0);
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
   
-      const lastSubmissionDate = user.lastSubmissionDate;
+      const lastSubmissionDate = user.lastSubmissionDate ? new Date(user.lastSubmissionDate).setUTCHours(0, 0, 0, 0) : null;
   
-      if (!lastSubmissionDate || new Date(lastSubmissionDate) < yesterday) {
+      if (!lastSubmissionDate || lastSubmissionDate < yesterday) {
         // Reset streaks if the last submission was not yesterday or today
         user.streaks = 0;
-      } else if (new Date(lastSubmissionDate) >= yesterday && new Date(lastSubmissionDate) < today) {
+      } else if (lastSubmissionDate === yesterday) {
         // Increment streaks if the last submission was yesterday
         user.streaks += 1;
+      } else if (lastSubmissionDate === today) {
+        // Maintain the current streak if the last submission was today
+        user.streaks = user.streaks;
       }
   
       if (user.streaks > user.maxStreak) {
