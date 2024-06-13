@@ -11,9 +11,10 @@ const ProblemPage = () => {
   const { token, user } = useContext(AuthContext);
   const [problem, setProblem] = useState(null);
   const [submissions, setSubmissions] = useState([]);
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
+  const [helpTitle, setHelpTitle] = useState('');
+  const [helpContent, setHelpContent] = useState('');
+  const [helpCode, setHelpCode] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,18 +47,27 @@ const ProblemPage = () => {
     }
   }, [problem, token, user]);
 
-  const handleCommentSubmit = (e) => {
+  const handleHelpRequestSubmit = async (e) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    if (!helpTitle.trim() || !helpContent.trim()) return;
 
-    axios.post(`/api/addComment/${problemId}`, { text: newComment }, { headers: { Authorization: token } })
-      .then(response => {
-        setComments([response.data, ...comments]);
-        setNewComment('');
-      })
-      .catch(error => {
-        console.error('Error adding comment:', error);
+    try {
+      const response = await axios.post('/api/forum/posts/help', {
+        title: helpTitle,
+        content: helpContent,
+        code: helpCode,
+        problemId: problemId
+      }, {
+        headers: { Authorization: token }
       });
+
+      console.log('Help request submitted:', response.data);
+      setHelpTitle('');
+      setHelpContent('');
+      setHelpCode('');
+    } catch (error) {
+      console.error('Error submitting help request:', error);
+    }
   };
 
   if (loading) {
@@ -97,24 +107,29 @@ const ProblemPage = () => {
             })}
           </ul>
         </div>
-        <div className="comments-section">
-          <h2>Comments</h2>
-          <form onSubmit={handleCommentSubmit}>
+        <div className="help-section">
+          <h2>Need Help?</h2>
+          <form onSubmit={handleHelpRequestSubmit}>
+            <input
+              type="text"
+              value={helpTitle}
+              onChange={(e) => setHelpTitle(e.target.value)}
+              placeholder="Title of your question"
+              required
+            />
             <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Leave a comment or hint..."
+              value={helpContent}
+              onChange={(e) => setHelpContent(e.target.value)}
+              placeholder="Describe your issue"
+              required
             ></textarea>
-            <button type="submit">Submit</button>
+            <textarea
+              value={helpCode}
+              onChange={(e) => setHelpCode(e.target.value)}
+              placeholder="Optional: Include code"
+            ></textarea>
+            <button type="submit">Submit Request</button>
           </form>
-          <ul>
-            {comments.map((comment) => (
-              <li key={comment._id}>
-                <strong>{comment.userId.username}</strong> <span>{new Date(comment.createdAt).toLocaleString()}</span>
-                <p>{comment.text}</p>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </div>

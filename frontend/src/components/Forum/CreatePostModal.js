@@ -1,23 +1,27 @@
 import React, { useState, useContext } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext'; // Adjust the import path as needed
+import { AuthContext } from '../../context/AuthContext';
 import './forum.css';
 
-Modal.setAppElement('#root'); // This is to avoid accessibility issues with the modal
+Modal.setAppElement('#root');
 
 const CreatePostModal = ({ isOpen, onRequestClose }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [code, setCode] = useState('');
-  const { user, token } = useContext(AuthContext); // Get user information and token from the auth context
+  const { user, token } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Client-side validation
     if (!title || !content) {
       alert('Title and content are required.');
+      return;
+    }
+
+    if (!token) {
+      alert('You must be logged in to create a post.');
       return;
     }
 
@@ -28,13 +32,14 @@ const CreatePostModal = ({ isOpen, onRequestClose }) => {
         code,
         authorId: user._id
       }, {
-        headers: { Authorization: `${token}` } // Include the token in the request headers
+        headers: { Authorization: `${token}` } // Ensure token is prefixed correctly
       });
 
       onRequestClose();
-      window.location.reload(); // Reload the page to show the new post
+      window.location.reload();
     } catch (error) {
       console.error('There was an error creating the post!', error);
+      alert('There was an error creating the post. Please try again.');
     }
   };
 

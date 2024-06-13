@@ -1,6 +1,28 @@
 const Problem = require('../models/problemModel');
+const SuggestedProblem = require('../models/suggestedProblemModel');
 
 const problemController = {
+  // Suggest a new problem
+  suggestProblem : async (req, res) => {
+    const { title, description, difficulty, code, testCases } = req.body;
+    const { user } = req;
+  
+    try {
+      const newSuggestion = new SuggestedProblem({
+        title,
+        description,
+        difficulty,
+        code,
+        testCases,
+        suggestedBy: user._id
+      });
+      await newSuggestion.save();
+      res.status(201).json(newSuggestion);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
   createProblem: async (req, res) => {
     const { title, statement, difficulty, code, test_list } = req.body;
 

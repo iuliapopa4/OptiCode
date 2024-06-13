@@ -14,6 +14,7 @@ import Leaderboard from "./components/Leaderboard/Leaderboard";
 import Forgot from "./components/Forgot/Forgot";
 import Forum from "./components/Forum/Forum";
 import ForumPost from "./components/Forum/ForumPost";
+import HelpPost from "./components/Forum/HelpPost";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import ManageProblems from "./components/Admin/ManageProblems";
 import CreateProblem from "./components/Admin/createProblem";
@@ -108,6 +109,8 @@ function App() {
       <Route path="/leaderboard" element={isLoggedIn ? <Leaderboard /> : <AuthLayout />} />
       <Route path="/forum" element={isLoggedIn ? <Forum /> : <AuthLayout />} />
       <Route path="/forum/posts/:id" element={isLoggedIn ? <ForumPost /> : <AuthLayout />} />
+      <Route path="/forum/posts/help/:id" element={isLoggedIn ? <HelpPost /> : <AuthLayout />} />
+
 
       <Route path="/admin/dashboard" element={<ProtectedRoute component={AdminDashboard} adminOnly />} />
       <Route path="/admin/manage-problems" element={<ProtectedRoute component={ManageProblems} adminOnly />} />

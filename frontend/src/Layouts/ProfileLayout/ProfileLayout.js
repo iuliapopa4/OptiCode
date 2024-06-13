@@ -142,8 +142,7 @@ const ProfileLayout = () => {
             <span className="tooltip-text">You solved {problems.length} problems out of {totalProblems}.</span>
           </div>
           <div className="streaks">
-            <p>Current Streak: {userData.streaks}</p>
-            <p>Max Streak: {userData.maxStreak}</p>
+            <p>Longest Streak: {userData.maxStreak}</p>
           </div>
 
           <div className="search-bar">

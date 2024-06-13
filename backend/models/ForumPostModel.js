@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
   content: String,
-  code: String, // Added field for code
+  code: String,
   authorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -32,6 +32,16 @@ const forumPostSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+  },
+  problemId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Problem',
+    required: false,
+  },
+  type: {
+    type: String,
+    enum: ['general', 'help'],
+    default: 'general'
   },
   comments: [commentSchema],
   timestamp: {

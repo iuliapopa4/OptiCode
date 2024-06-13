@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import NavBar from "../NavBar/NavBar";
+import { AuthContext } from '../../context/AuthContext';
 import './addproblem.css';
 
 const AddProblem = () => {
   const [problemData, setProblemData] = useState({
     title: '',
-    text: '',
+    description: '',
     difficulty: 'easy',
     code: '',
-    test_list: ''
+    testCases: ''
   });
-
+  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,10 +27,15 @@ const AddProblem = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/createProblem', problemData);
+      await axios.post('/api/suggestProblem', problemData, {
+        headers: {
+          Authorization: `${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       navigate('/problems');
     } catch (error) {
-      console.error('Error adding problem:', error);
+      console.error('Error suggesting problem:', error);
     }
   };
 
@@ -37,12 +43,13 @@ const AddProblem = () => {
     <div>
       <NavBar />
       <div className="add-problem-container">
+        <h2>Suggest a Problem</h2>
         <form onSubmit={handleSubmit}>
           <label>Title:</label>
           <input type="text" name="title" value={problemData.title} onChange={handleChange} required />
           
           <label>Description:</label>
-          <textarea name="statement" value={problemData.statement} onChange={handleChange} required></textarea>
+          <textarea name="description" value={problemData.description} onChange={handleChange} required></textarea>
 
           <label>Difficulty:</label>
           <select name="difficulty" value={problemData.difficulty} onChange={handleChange}>
@@ -55,10 +62,10 @@ const AddProblem = () => {
           <textarea name="code" value={problemData.code} onChange={handleChange}></textarea>
 
           <label>Test Cases:</label>
-          <textarea name="test_list" value={problemData.test_list} onChange={handleChange}></textarea>
+          <textarea name="testCases" value={problemData.testCases} onChange={handleChange}></textarea>
           <small>Enter test cases in the format: assert function_name(param1, param2) == expected_result</small>
 
-          <button type="submit">Add Problem</button>
+          <button type="submit">Suggest Problem</button>
         </form>
       </div>
     </div>

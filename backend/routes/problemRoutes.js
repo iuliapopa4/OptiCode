@@ -10,6 +10,9 @@ router.get('/getProblem/:id', problemController.getProblemById);
 router.get('/getProblemByObjectId/:id', problemController.getProblemByObjectId);
 router.get('/totalProblems', problemController.getTotalProblems);
 
+
+router.post('/suggestProblem', auth, problemController.suggestProblem);
+
 // Admin routes
 router.post('/createProblem', auth, isAdmin, problemController.createProblem);
 router.patch('/updateProblemField/:id', problemController.updateProblemField); 

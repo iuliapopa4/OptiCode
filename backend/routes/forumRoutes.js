@@ -3,37 +3,65 @@ const router = express.Router();
 const ForumPost = require('../models/ForumPostModel');
 const authMiddleware = require('../middlewares/auth');
 
-// Create a new forum post
+// Create a new help request for a specific problem
+router.post('/posts/help', authMiddleware, async (req, res) => {
+  const { title, content, code, problemId } = req.body;
+  const { user } = req;
+
+  try {
+    const newPost = new ForumPost({
+      title,
+      content,
+      code,
+      problemId,
+      type: 'help',
+      authorId: user._id,
+      timestamp: new Date()
+    });
+    await newPost.save();
+    res.status(201).json(newPost);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Create a new general forum post
 router.post('/posts', authMiddleware, async (req, res) => {
   const { title, content, code } = req.body;
   const { user } = req;
 
   try {
-    if (!title || !user) {
-      return res.status(400).json({ error: 'Title and author are required' });
-    }
-
     const newPost = new ForumPost({
       title,
-      content: content || '',  // Default to empty string if content is not provided
-      code: code || '',  // Default to empty string if code is not provided
+      content,
+      code,
+      type: 'general',
       authorId: user._id,
       timestamp: new Date()
     });
-
     await newPost.save();
     res.status(201).json(newPost);
   } catch (error) {
-    console.error('Error creating new post:', error.message);
     res.status(400).json({ error: error.message });
   }
 });
 
-// Get all forum posts
-router.get('/posts', async (req, res) => {
+// Get all general posts
+router.get('/posts/general', async (req, res) => {
   try {
-    const posts = await ForumPost.find().populate('authorId', 'name');
-    console.log('Posts retrieved:', posts);
+    const posts = await ForumPost.find({ type: 'general' }).populate('authorId', 'name');
+    console.log('General posts retrieved:', posts);
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Get all help requests
+router.get('/posts/help', async (req, res) => {
+  try {
+    const posts = await ForumPost.find({ type: 'help' }).populate('authorId', 'name');
+    console.log('Help requests retrieved:', posts);
     res.status(200).json(posts);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -61,8 +89,8 @@ router.post('/posts/:id/comments', authMiddleware, async (req, res) => {
   try {
     const post = await ForumPost.findById(id);
     post.comments.push({
-      content: content || '',  // Default to empty string if content is not provided
-      code: code || '',  // Default to empty string if code is not provided
+      content: content || '',
+      code: code || '',
       authorId: user._id,
       timestamp: new Date()
     });
@@ -96,7 +124,6 @@ router.delete('/posts/:id', authMiddleware, async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
 
 // Delete a comment from a forum post
 router.delete('/posts/:postId/comments/:commentId', authMiddleware, async (req, res) => {
