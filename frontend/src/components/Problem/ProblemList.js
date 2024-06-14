@@ -76,7 +76,7 @@ const ProblemList = () => {
       <NavBar />
       <div className='problem'>
         <div className="filters">
-          <Link to="/addProblem" className="add-problem-button">Suggest a Problem</Link>
+          <Link to="/suggestProblem" className="add-problem-button">Suggest a Problem</Link>
           <div className="search-filter-wrapper">
             <input
               type="text"

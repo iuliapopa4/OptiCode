@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import NavBar from "../NavBar/NavBar";
@@ -15,6 +15,7 @@ const ProblemPage = () => {
   const [helpTitle, setHelpTitle] = useState('');
   const [helpContent, setHelpContent] = useState('');
   const [helpCode, setHelpCode] = useState('');
+  const [canViewSolutions, setCanViewSolutions] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,6 +26,7 @@ const ProblemPage = () => {
           headers: { Authorization: token }
         });
         setProblem(problemResponse.data);
+        console.log('Problem data:', problemResponse.data);
       } catch (error) {
         console.error('Error fetching problem data:', error);
       } finally {
@@ -40,9 +42,20 @@ const ProblemPage = () => {
       axios.get(`/api/submissions/${user._id}/${problem._id}`, { headers: { Authorization: token } })
         .then(response => {
           setSubmissions(response.data);
+          console.log('Submissions:', response.data);
         })
         .catch(error => {
           console.error('Error fetching submissions:', error);
+        });
+
+      axios.get(`/api/auth/user`, { headers: { Authorization: token } })
+        .then(response => {
+          const solvedProblems = response.data.solvedProblems || [];
+          setCanViewSolutions(solvedProblems.includes(problemId));
+          console.log('User solved problems:', solvedProblems);
+        })
+        .catch(error => {
+          console.error('Error fetching user info:', error);
         });
     }
   }, [problem, token, user]);
@@ -87,7 +100,15 @@ const ProblemPage = () => {
             <div className="problem-details">
               <h1>{problem.title}</h1>
               <p>{problem.text}</p>
+              
               <CodeEditor problemId={problem._id} testCases={problem.examples} userId={user._id} />
+              {canViewSolutions && (
+                <div className="solutions-button-section">
+                  <Link to={`/solutions/${problemId}`}>
+                    <button className="view-solutions-button">Solutions</button>
+                  </Link>
+                </div>
+              )}
             </div>
           ) : (
             <p>Loading problem...</p>
@@ -131,6 +152,7 @@ const ProblemPage = () => {
             <button type="submit">Submit Request</button>
           </form>
         </div>
+       
       </div>
     </div>
   );

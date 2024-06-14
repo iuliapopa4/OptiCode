@@ -39,6 +39,7 @@ const Leaderboard = () => {
             <tr>
               <th>Rank</th>
               <th>Name</th>
+              <th>Level</th>
               <th>Points</th>
             </tr>
           </thead>
@@ -47,6 +48,7 @@ const Leaderboard = () => {
               <tr key={currentUser._id} className='highlight'>
                 <td>{currentUserIndex + 1}</td>
                 <td>{currentUser.name}</td>
+                <td>{currentUser.level}</td>
                 <td>{currentUser.points.toFixed(2)}</td>
               </tr>
             )}
@@ -54,6 +56,7 @@ const Leaderboard = () => {
               <tr key={leaderboardUser._id} className={leaderboardUser._id === user._id ? 'highlight' : ''}>
                 <td>{currentUserIndex !== -1 && index >= currentUserIndex ? index + 2 : index + 1}</td>
                 <td>{leaderboardUser.name}</td>
+                <td>{leaderboardUser.level}</td>
                 <td>{leaderboardUser.points.toFixed(2)}</td>
               </tr>
             ))}

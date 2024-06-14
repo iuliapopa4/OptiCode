@@ -4,8 +4,9 @@ const validateEmail = require("../helpers/validateEmail");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
-const Problem = require('../models/problemModel');
 const Submission = require('../models/submissionModel'); 
+const Problem = require('../models/problemModel'); 
+
 
 const calculateLevel = (points) => {
   const level = Math.floor(0.1 * Math.sqrt(points));
@@ -225,6 +226,13 @@ const userController = {
       // Update user level based on new points
       const { level, pointsNeeded } = calculateLevel(user.points);
       user.level = level;
+      
+       // Add problem to solvedProblems if the score is 100
+      if (newScore === 100) {
+        if (!user.solvedProblems.includes(problemId)) {
+          user.solvedProblems.push(problemId);
+        }
+      }
   
       await user.save();
       return { points: user.points, level, pointsNeeded };
@@ -285,16 +293,16 @@ const userController = {
   
   
   
-
   getLeaderboard: async (req, res) => {
     try {
-      const users = await User.find().sort({ points: -1 }).select('name points').limit(10);
+      const users = await User.find().sort({ points: -1 }).select('name points level').limit(10);
       res.status(200).json(users);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
+  
 
   checkStreaks: async (req, res) => {
     try {
@@ -339,7 +347,23 @@ getUsers: async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 },
-  
+
+checkPerfectScore: async (req, res) => {
+  const { problemId } = req.params;
+  const { user } = req;
+
+  try {
+    const submission = await Submission.findOne({ problemId, userId: user._id, score: 100 });
+    if (submission) {
+      return res.status(200).json({ hasPerfectScore: true });
+    }
+    return res.status(200).json({ hasPerfectScore: false });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+},
+
+
 };
 
 module.exports = userController;

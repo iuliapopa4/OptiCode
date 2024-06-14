@@ -100,7 +100,7 @@ const HelpPost = () => {
             <p><strong>By:</strong> {post.authorId.name} on {new Date(post.timestamp).toLocaleString()}</p>
             {(user && (user._id === post.authorId._id || user.role === 'admin')) && (
               <button onClick={handleDeletePost} className="deleteButton">
-                <FaTrash /> Delete Post
+                <FaTrash />
               </button>
             )}
           </div>

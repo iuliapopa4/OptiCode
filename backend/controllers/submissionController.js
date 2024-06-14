@@ -2,7 +2,7 @@ const Submission = require('../models/submissionModel');
 const Problem = require('../models/problemModel');
 const User = require('../models/userModel');
 const { evaluateSolution } = require('../helpers/evaluateSolution');
-const { updateUserPoints } = require('../controllers/userController');
+const { updateUserPoints } = require('./userController');
 const mongoose = require('mongoose');
 
 const submissionController = {
@@ -60,6 +60,12 @@ const submissionController = {
 
       user.lastSubmissionDate = new Date();
       await updateUserPoints(userId, problemId, score);
+      
+      // Add problem to solvedProblems if score is 100
+      if (score === 100 && !user.solvedProblems.includes(problemId)) {
+        user.solvedProblems.push(problemId);
+      }
+      
       await user.save();
 
       res.status(201).json({ submission, evaluation });

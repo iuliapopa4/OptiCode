@@ -38,12 +38,15 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
     setIsError(false);
 
     try {
+      console.log("Submitting code for compilation...");
       const compileResponse = await axios.post('/api/compile', {
         code: editorContent,
         language,
         problemId,
         testCases
-      }, { headers: { Authorization: token } });
+      }, { headers: { Authorization: `${token}` } });
+
+      console.log("Compile response:", compileResponse.data);
 
       if (compileResponse.data.success === false) {
         setError(compileResponse.data.error);
@@ -54,27 +57,29 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
         setOutput(`Score: ${formattedScore}%`);
         setIsError(false);
 
+        console.log("Submitting code for evaluation...");
         const submissionResponse = await axios.post(`/api/submitCode/${problemId}`, {
           code: editorContent,
           language,
           score: formattedScore,
           passedTests,
           totalTests,
-        }, { headers: { Authorization: token } });
+        }, { headers: { Authorization: `${token}` } });
 
-        console.log('Submission saved:', submissionResponse.data);
+        console.log('Submission response:', submissionResponse.data);
 
         // Assuming the streaks are updated and returned in the response
-        const streakResponse = await axios.get('/api/checkStreaks', { headers: { Authorization: {token} } });
+        console.log("Checking streaks...");
+        const streakResponse = await axios.get('/api/checkStreaks', { headers: { Authorization: `${token}` } });
         console.log('Streaks updated:', streakResponse.data);
       }
     } catch (error) {
+      console.error('Submission error:', error);
       if (error.response && error.response.status === 401) {
         // Handle token expiration
         dispatch({ type: 'LOGOUT' });
         setError('Session expired. Please log in again.');
       } else {
-        console.error('Submission error:', error);
         setError(error.response?.data.error || 'Error communicating with the server');
       }
       setIsError(true);
@@ -87,7 +92,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
     try {
       const response = await axios.post('/api/analyze', {
         code: editorContent
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      }, { headers: { Authorization: `${token}` } });
       setFeedback(response.data.feedback);
     } catch (error) {
       setFeedback(`Error analyzing code: ${error.response?.data.error || error.message}`);

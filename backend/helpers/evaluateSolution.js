@@ -18,6 +18,7 @@ async function evaluateSolution(userCode, problemId) {
         // Extract the function name and signature from the user's code using regex
         const userFunctionMatch = userCode.match(/def\s+(\w+)\s*\(([^)]*)\)/);
         if (!userFunctionMatch) {
+            console.error('User code:', userCode); // Add this line
             return reject(new Error('Error parsing user code: No function declaration found.'));
         }
         const userFunctionName = userFunctionMatch[1];
@@ -30,6 +31,12 @@ async function evaluateSolution(userCode, problemId) {
         }
         const expectedFunctionName = problemFunctionMatch[1];
         const expectedFunctionArgs = problemFunctionMatch[2];
+
+        // Debug logging
+        console.log('User Function Name:', userFunctionName);
+        console.log('User Function Args:', userFunctionArgs);
+        console.log('Expected Function Name:', expectedFunctionName);
+        console.log('Expected Function Args:', expectedFunctionArgs);
 
         // Replace the function name and arguments in the user's code to match the problem's function name and arguments
         const modifiedUserCode = userCode.replace(

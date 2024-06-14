@@ -18,6 +18,7 @@ import HelpPost from "./components/Forum/HelpPost";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import ManageProblems from "./components/Admin/ManageProblems";
 import CreateProblem from "./components/Admin/createProblem";
+import SharedSolutions from "./components/Problem/SharedSolutions";
 import EditProblem from "./components/Admin/editProblem";
 import SuggestedProblems from "./components/Admin/suggestedProblems";
 import EditSuggestedProblem from "./components/Admin/editSuggestedProblem";
@@ -103,13 +104,14 @@ function App() {
       <Route path="/editprofile" element={isLoggedIn ? <EditProfile /> : <AuthLayout />} />
       <Route path="/problems/:id" element={isLoggedIn ? <ProblemPage /> : <AuthLayout />} />
       <Route path="/problems" element={isLoggedIn ? <ProblemList /> : <AuthLayout />} />
-      <Route path="/addProblem" element={isLoggedIn ? <AddProblem /> : <AuthLayout />} />
+      <Route path="/suggestProblem" element={isLoggedIn ? <AddProblem /> : <AuthLayout />} />
       <Route path="/submission/:id" element={isLoggedIn ? <Submission /> : <AuthLayout />} />
       <Route path="/auth/forgot-password" element={<Forgot />} />
       <Route path="/leaderboard" element={isLoggedIn ? <Leaderboard /> : <AuthLayout />} />
       <Route path="/forum" element={isLoggedIn ? <Forum /> : <AuthLayout />} />
       <Route path="/forum/posts/:id" element={isLoggedIn ? <ForumPost /> : <AuthLayout />} />
       <Route path="/forum/posts/help/:id" element={isLoggedIn ? <HelpPost /> : <AuthLayout />} />
+      <Route path="/solutions/:id" element={<SharedSolutions />} />
 
 
       <Route path="/admin/dashboard" element={<ProtectedRoute component={AdminDashboard} adminOnly />} />

@@ -1,3 +1,4 @@
+// models/SolutionModel.js
 const mongoose = require('mongoose');
 
 const solutionSchema = new mongoose.Schema({
@@ -11,12 +12,14 @@ const solutionSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  solution: {
+  code: {
     type: String,
     required: true,
   },
-}, {
-  timestamps: true,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-module.exports = mongoose.model('Solution', solutionSchema);
+module.exports = mongoose.models.Solution || mongoose.model('Solution', solutionSchema);

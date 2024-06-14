@@ -17,6 +17,8 @@ route.get('/auth/signout', userController.signout);
 route.get('/profile', auth, userController.getUserProfile);
 route.get('/leaderboard', userController.getLeaderboard);
 route.get('/checkStreaks', auth, userController.checkStreaks);
+route.get('/checkPerfectScore/:problemId', auth, userController.checkPerfectScore);
+
 
 route.get('/users', auth, isAdmin, userController.getUsers);
 
