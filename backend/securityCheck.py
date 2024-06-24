@@ -21,14 +21,6 @@ class SecurityAnalyzer(ast.NodeVisitor):
         if isinstance(node.func, ast.Name):
             if node.func.id in {'eval', 'exec'}:
                 return f"Use of '{node.func.id}' detected. These functions can be dangerous and should be avoided."
-
-        # Check for potential NoSQL injection risks
-        if isinstance(node.func, ast.Attribute):
-            if node.func.attr in {'find', 'find_one', 'update', 'delete', 'insert'}:
-                # Placeholder check for potential NoSQL injection risks
-                # In a real-world scenario, you would perform more detailed analysis
-                return f"Ensure proper sanitization and validation when using '{node.func.attr}' to prevent NoSQL injection."
-
         # Check for use of subprocess with shell=True
         if isinstance(node.func, ast.Name) and node.func.id == 'subprocess' and any(isinstance(arg, ast.keyword) and arg.arg == 'shell' and isinstance(arg.value, ast.Constant) and arg.value.value == True for arg in node.keywords):
             return "Use of 'subprocess' with shell=True detected. This can be dangerous and should be avoided."

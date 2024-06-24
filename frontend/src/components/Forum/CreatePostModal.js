@@ -4,14 +4,16 @@ import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import './forum.css';
 
-Modal.setAppElement('#root');
+Modal.setAppElement('#root'); // Set the root element for the modal
 
 const CreatePostModal = ({ isOpen, onRequestClose }) => {
+  // State variables to store form inputs
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [code, setCode] = useState('');
   const { user, token } = useContext(AuthContext);
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,17 +28,18 @@ const CreatePostModal = ({ isOpen, onRequestClose }) => {
     }
 
     try {
-      const response = await axios.post('/api/forum/posts', {
+      // Send POST request to create a new forum post
+      await axios.post('/api/forum/posts', {
         title,
         content,
         code,
         authorId: user._id
       }, {
-        headers: { Authorization: `${token}` } // Ensure token is prefixed correctly
+        headers: { Authorization: `${token}` } 
       });
 
-      onRequestClose();
-      window.location.reload();
+      onRequestClose(); // Close the modal
+      window.location.reload(); // Reload the page to show the new post
     } catch (error) {
       console.error('There was an error creating the post!', error);
       alert('There was an error creating the post. Please try again.');

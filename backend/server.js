@@ -60,7 +60,6 @@ app.use('/api', require('./routes/astRoute'));
 app.use('/api', require('./routes/solutionRoutes'));
 app.use('/api', require('./routes/adminRoutes')); 
 app.use('/api', require('./routes/suggestedProblemRoutes'));
-app.use('/api', require('./routes/commentsRoutes'));
 app.use('/api/forum', require('./routes/forumRoutes'));
 
 

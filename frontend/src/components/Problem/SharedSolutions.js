@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import NavBar from '../NavBar/NavBar';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';

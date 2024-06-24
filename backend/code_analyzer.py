@@ -3,6 +3,7 @@ import sys
 import astor  # type: ignore
 from typing import List, Optional, Set
 
+# Define a class to analyze Python code
 class CodeAnalyzer(ast.NodeVisitor):
     def __init__(self):
         self.feedback_set: Set[str] = set()
@@ -10,11 +11,13 @@ class CodeAnalyzer(ast.NodeVisitor):
         self.assigned_vars: Set[str] = set()
         self.used_vars: Set[str] = set()
 
+    # Method to add feedback messages
     def add_feedback(self, message: Optional[str]) -> None:
         if message and message not in self.feedback_set:
             self.feedback_set.add(message)
             self.feedback_list.append(message)
 
+    # Visit function definitions to analyze them
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         self.add_feedback(self.check_function_name(node))
         self.add_feedback(self.check_return_statement(node))
@@ -25,6 +28,7 @@ class CodeAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
         self.check_unused_variables()  # Check for unused variables after visiting all nodes
 
+    # Visit name nodes to track variable usage
     def visit_Name(self, node: ast.Name) -> None:
         if isinstance(node.ctx, ast.Store):
             self.assigned_vars.add(node.id)
@@ -33,6 +37,7 @@ class CodeAnalyzer(ast.NodeVisitor):
         self.add_feedback(self.check_variable_name(node))
         self.generic_visit(node)
 
+    # Visit call nodes to check function calls
     def visit_Call(self, node: ast.Call) -> None:
         self.add_feedback(self.check_recursion(node))
         self.add_feedback(self.check_security_issues(node))
@@ -69,6 +74,7 @@ class CodeAnalyzer(ast.NodeVisitor):
                 self.assigned_vars.add(generator.target.id)
         self.generic_visit(node)
 
+    # Check function names for descriptiveness
     def check_function_name(self, node: ast.FunctionDef) -> Optional[str]:
         if len(node.name) == 1:
             return f"Function name '{node.name}' is too short. Consider using descriptive names."
@@ -76,12 +82,14 @@ class CodeAnalyzer(ast.NodeVisitor):
             return f"Function name '{node.name}' is quite short. Consider making it more descriptive."
         return None
 
+    # Check if functions contain return statements
     def check_return_statement(self, node: ast.FunctionDef) -> Optional[str]:
         has_return = any(isinstance(stmt, ast.Return) for stmt in ast.walk(node))
         if not has_return and node.name != "main":
             return f"Function '{node.name}' does not contain a return statement."
         return None
 
+    # Check variable names for descriptiveness
     def check_variable_name(self, node: ast.Name) -> Optional[str]:
         if isinstance(node.ctx, ast.Store):
             if len(node.id) == 1 and node.id not in {"i", "j", "k", "pi"}:
@@ -90,6 +98,7 @@ class CodeAnalyzer(ast.NodeVisitor):
                 return f"Variable name '{node.id}' is quite short. Consider making it more descriptive."
         return None
 
+    # Check for recursion in function calls
     def check_recursion(self, node: ast.Call) -> Optional[str]:
         if isinstance(node.func, ast.Name):
             parent = node.parent
@@ -99,12 +108,14 @@ class CodeAnalyzer(ast.NodeVisitor):
                 parent = getattr(parent, 'parent', None)
         return None
 
+    # Check function length and suggest splitting long functions
     def check_function_length(self, node: ast.FunctionDef) -> Optional[str]:
         num_lines = len(node.body)
         if num_lines > 30:
             return f"Function '{node.name}' is too long ({num_lines} lines). Consider breaking it into smaller functions."
         return None
 
+    # Get the nested depth of a node
     def get_nested_depth(self, node: ast.AST, depth: int = 0) -> int:
         if not hasattr(node, 'body'):
             return depth
@@ -112,11 +123,13 @@ class CodeAnalyzer(ast.NodeVisitor):
             return max((self.get_nested_depth(n, depth + 1) for n in node.body if isinstance(n, (ast.If, ast.For, ast.While, ast.Try))), default=depth)
         return depth
 
+    # Check binary operations for proper validation
     def check_bin_op(self, node: ast.BinOp) -> Optional[str]:
         if isinstance(node.op, ast.Add):
             return f"Binary operation {astor.to_source(node).strip()} detected. Ensure operands are properly validated."
         return None
 
+    # Check for security issues in function calls
     def check_security_issues(self, node: ast.Call) -> Optional[str]:
         if isinstance(node.func, ast.Attribute):
             if node.func.attr in {'execute', 'executemany'}:
@@ -126,6 +139,7 @@ class CodeAnalyzer(ast.NodeVisitor):
                 return "Use of 'eval' or 'exec' detected. These functions can be dangerous and should be avoided."
         return None
 
+    # Check algorithm efficiency, looking for nested loops and inefficient operations
     def check_algorithm_efficiency(self, node: ast.FunctionDef) -> None:
         # Check for nested loops that might indicate O(n^2) complexity
         loop_nesting_level = 0
@@ -145,8 +159,8 @@ class CodeAnalyzer(ast.NodeVisitor):
                         if any(isinstance(e, ast.Name) and e.id == collection_name for e in self.assigned_vars):
                             self.add_feedback(f"Consider using a set for '{collection_name}' for faster membership checks.")
 
+    # Check functionality for common tasks and suggest more efficient methods
     def check_functionality(self, node: ast.Call) -> None:
-        # Detect common tasks and suggest more efficient methods
         if isinstance(node.func, ast.Name) and node.func.id == 'sort':
             self.add_feedback("Consider using the built-in sorted() function for better performance.")
         if isinstance(node.func, ast.Attribute) and node.func.attr in {'append', 'extend'}:
@@ -154,28 +168,31 @@ class CodeAnalyzer(ast.NodeVisitor):
             if collection_name in self.assigned_vars:
                 self.add_feedback(f"Consider using list comprehensions for '{collection_name}' for better readability and performance.")
 
+    # Check readability and suggest adding comments or breaking down long functions
     def check_readability(self, node: ast.FunctionDef) -> None:
-        # Suggest breaking down long functions
         if len(node.body) > 20:
             self.add_feedback(f"Function '{node.name}' is quite long. Consider breaking it down into smaller, more manageable functions.")
-        # Suggest adding comments or documentation
         if not any(isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Str) for stmt in node.body):
             self.add_feedback(f"Function '{node.name}' lacks documentation. Consider adding comments or docstrings for better readability.")
 
+    # Analyze complexity of a function
     def analyze_complexity(self, node: ast.FunctionDef) -> None:
         complexity = sum(1 for _ in ast.walk(node) if isinstance(_, (ast.If, ast.For, ast.While, ast.Try)))
         if complexity > 10:  # Arbitrary threshold
             self.add_feedback(f"Function '{node.name}' is too complex with a complexity of {complexity}. Consider refactoring.")
 
+    # Check for code smells in a function
     def check_code_smells(self, node: ast.FunctionDef) -> None:
         if len(node.args.args) > 5:  # Arbitrary threshold
             self.add_feedback(f"Function '{node.name}' has too many parameters. Consider using a data class or passing a single object.")
 
+    # Check for unused variables
     def check_unused_variables(self):
         unused_vars = self.assigned_vars - self.used_vars
         for var in unused_vars:
             self.add_feedback(f"Variable '{var}' is assigned a value but never used.")
 
+    # Analyze the provided code
     def analyze(self, code: str) -> str:
         try:
             tree = ast.parse(code)

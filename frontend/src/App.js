@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import ActivateLayout from "./Layouts/ActivateLayout/ActivateLayout";
 import AuthLayout from "./Layouts/AuthLayout/AuthLayout";
 import ProfileLayout from "./Layouts/ProfileLayout/ProfileLayout";
@@ -22,19 +22,19 @@ import SharedSolutions from "./components/Problem/SharedSolutions";
 import EditProblem from "./components/Admin/editProblem";
 import SuggestedProblems from "./components/Admin/suggestedProblems";
 import EditSuggestedProblem from "./components/Admin/editSuggestedProblem";
-import AdminForum from "./components/Admin/AdminForum";
-import AdminForumPost from "./components/Admin/AdminForumPost";
 import ManageUsers from "./components/Admin/ManageUsers";
+
 import { AuthContext } from "./context/AuthContext";
 import axios from "axios";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const { dispatch, token, isLoggedIn, user } = useContext(AuthContext);
-  const [streaksChecked, setStreaksChecked] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [streaksChecked, setStreaksChecked] = useState(false); // State to track if streaks are checked
+  const [loading, setLoading] = useState(true); // State to track loading status
   const navigate = useNavigate();
 
+  // Effect to get token and update state if user is signed in
   useEffect(() => {
     const _appSignging = localStorage.getItem("_appSignging");
     if (_appSignging) {
@@ -54,6 +54,7 @@ function App() {
     }
   }, [dispatch, isLoggedIn]);
 
+  // Effect to get user data if token is available
   useEffect(() => {
     if (token) {
       const getUser = async () => {
@@ -65,13 +66,14 @@ function App() {
           dispatch({ type: "GET_USER", payload: res.data });
         } catch (error) {
           console.error("Error fetching user data", error);
-          navigate('/');
+          navigate('/login');
         }
       };
       getUser();
     }
   }, [dispatch, token, navigate]);
 
+  // Effect to check streaks if token and user data are available and streaks are not checked yet
   useEffect(() => {
     if (token && user && !streaksChecked) {
       const checkStreaks = async () => {
@@ -92,11 +94,12 @@ function App() {
   }, [token, user, dispatch, streaksChecked]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Show loading message while fetching data
   }
 
   return (
     <Routes>
+      <Route path="/login" element={<AuthLayout />} />
       <Route path="/" element={isLoggedIn ? <HomeLayout /> : <AuthLayout />} />
       <Route path="/auth/reset-password/:token" element={<ResetLayout />} />
       <Route path="/api/auth/activate/:activation_token" element={<ActivateLayout />} />
@@ -113,7 +116,7 @@ function App() {
       <Route path="/forum/posts/help/:id" element={isLoggedIn ? <HelpPost /> : <AuthLayout />} />
       <Route path="/solutions/:id" element={<SharedSolutions />} />
 
-
+      {/* Admin routes protected with ProtectedRoute */}
       <Route path="/admin/dashboard" element={<ProtectedRoute component={AdminDashboard} adminOnly />} />
       <Route path="/admin/manage-problems" element={<ProtectedRoute component={ManageProblems} adminOnly />} />
       <Route path="/admin/addProblem" element={<ProtectedRoute component={CreateProblem} adminOnly />} />
@@ -121,8 +124,6 @@ function App() {
       <Route path="/admin/manage-users" element={<ProtectedRoute component={ManageUsers} adminOnly />} />
       <Route path="/admin/suggested-problems" element={<ProtectedRoute component={SuggestedProblems} adminOnly />} />
       <Route path="/admin/editSuggestedProblem/:id" element={<ProtectedRoute component={EditSuggestedProblem} adminOnly />} />
-      <Route path="/admin/forum" element={<ProtectedRoute component={AdminForum} adminOnly />} />
-      <Route path="/admin/forum/posts/:id" element={<ProtectedRoute component={AdminForumPost} adminOnly />} />
     </Routes>
   );
 }

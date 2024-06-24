@@ -14,19 +14,23 @@ const initialState = {
 };
 
 const Login = () => {
-  const [visible, setVisible] = useState(false);
-  const [data, setData] = useState(initialState);
+  // State variables
+  const [visible, setVisible] = useState(false); // Password visibility toggle
+  const [data, setData] = useState(initialState); // Form data
   const { email, password } = data;
-  const { dispatch } = useContext(AuthContext);
+  const { dispatch } = useContext(AuthContext); // Authentication context
 
+  // Handle input field changes
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
+  // Toggle password visibility
   const handleClick = () => {
     setVisible(!visible);
   };
 
+  // Handle form submission
   const login = async (e) => {
     e.preventDefault();
     if (isEmpty(email) || isEmpty(password))
@@ -35,7 +39,7 @@ const Login = () => {
         bodyClassName: "toast-failed",
       });
     if (!isEmail(email))
-      return toast("Please enter a valid email addresss.", {
+      return toast("Please enter a valid email address.", {
         className: "toast-failed",
         bodyClassName: "toast-failed",
       });
@@ -50,7 +54,6 @@ const Login = () => {
       });
     }
   };
-
 
   return (
     <>
@@ -75,7 +78,6 @@ const Login = () => {
             <button type="submit">Login</button>
           </div>
         </form>
-
       </div>
     </>
   );

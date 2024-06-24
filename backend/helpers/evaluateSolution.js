@@ -4,12 +4,14 @@ const { exec } = require('child_process');
 const { v4: uuidv4 } = require('uuid');
 const Problem = require('../models/problemModel');
 
+// Function to evaluate user's code solution for a given problem
 async function evaluateSolution(userCode, problemId) {
     return new Promise(async (resolve, reject) => {
+        // Generate a unique filename for the temporary submission file
         const tempFilename = `${uuidv4()}.py`;
         const tempFilePath = path.join(__dirname, 'submissions', tempFilename);
 
-        // Fetch problem from the database using problemId
+        // Fetch problem details from the database using problemId
         const problem = await Problem.findById(problemId);
         if (!problem) {
             return reject(new Error('Problem not found.'));
@@ -18,7 +20,7 @@ async function evaluateSolution(userCode, problemId) {
         // Extract the function name and signature from the user's code using regex
         const userFunctionMatch = userCode.match(/def\s+(\w+)\s*\(([^)]*)\)/);
         if (!userFunctionMatch) {
-            console.error('User code:', userCode); // Add this line
+            console.error('User code:', userCode);
             return reject(new Error('Error parsing user code: No function declaration found.'));
         }
         const userFunctionName = userFunctionMatch[1];
@@ -50,10 +52,13 @@ async function evaluateSolution(userCode, problemId) {
         ).join('\n');
         const combinedCode = `${problem.code}\n\n${modifiedUserCode}\n\n${testCases}`;
 
+        // Write the combined code to the temporary file
         fs.writeFileSync(tempFilePath, combinedCode);
 
+        // Execute the combined code using Python
         exec(`python "${tempFilePath}"`, (error, stdout, stderr) => {
-            fs.unlinkSync(tempFilePath); // Clean up the temp file
+            // Clean up the temporary file
+            fs.unlinkSync(tempFilePath);
 
             if (error) {
                 console.error('Execution error:', stderr);
@@ -70,6 +75,7 @@ async function evaluateSolution(userCode, problemId) {
             const testResults = [];
             let passedTests = 0;
 
+            // Analyze the output to determine which test cases passed or failed
             outputLines.forEach((line, index) => {
                 if (line.includes('PASSED')) {
                     passedTests += 1;
@@ -94,6 +100,7 @@ async function evaluateSolution(userCode, problemId) {
                 }
             });
 
+            // Calculate the score based on the number of passed tests
             const totalTests = problem.test_list.length;
             const score = (passedTests / totalTests) * 100.0; // Ensure score is a floating-point number
 
@@ -107,6 +114,7 @@ async function evaluateSolution(userCode, problemId) {
                 feedback = 'None of the test cases passed. Please review your code and try again.';
             }
 
+            // Resolve the promise with the evaluation results
             resolve({
                 totalTests,
                 passedTests,

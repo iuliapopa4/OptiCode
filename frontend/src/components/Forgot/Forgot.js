@@ -7,19 +7,23 @@ import { useState } from "react";
 import "./forgot.css";
 
 const Forgot = () => {
+  // State to store the email input
   const [email, setEmail] = useState("");
 
+  // Handle change in the email input field
   const handleChange = (e) => {
     setEmail(e.target.value);
   };
 
+  // Reset the form fields
   const handleReset = () => {
     Array.from(document.querySelectorAll("input")).forEach(
       (input) => (input.value = "")
     );
-    setEmail({ email: "" });
+    setEmail("");
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isEmpty(email))
@@ -52,7 +56,10 @@ const Forgot = () => {
       <ToastContainer />
       <form onSubmit={handleSubmit}>
         <h2 style={{textAlign:"center",marginBottom:"30px"}}>FORGOT PASSWORD</h2>
-        <p style={{color:'grey', textAlign:"center"}}>Please enter your email address below. <br/> We'll send you a link to reset your password.</p>
+        <p style={{color:'grey', textAlign:"center"}}>
+          Please enter your email address below. <br/>
+          We'll send you a link to reset your password.
+        </p>
         <Input
           type="text"
           text="Email"
@@ -63,7 +70,7 @@ const Forgot = () => {
           <button type="submit">Reset</button>
         </div>
       </form>
-      </div>
+    </div>
   );
 };
 

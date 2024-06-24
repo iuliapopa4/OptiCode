@@ -4,13 +4,17 @@ import axios from 'axios';
 import NavBar from "../NavBar/NavBar";
 import { AuthContext } from "../../context/AuthContext";
 import './problemlist.css';
+import ProblemRoulette from '../Problem/ProblemRoulette';
+
 
 const ProblemList = () => {
   const [problems, setProblems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all'); // New state for status filter
-  const { user } = useContext(AuthContext); // Get user information from the auth context
+  const [statusFilter, setStatusFilter] = useState('all'); 
+  const { user } = useContext(AuthContext); 
+  const [isRouletteModalOpen, setRouletteModalOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchProblems = async () => {
@@ -71,12 +75,23 @@ const ProblemList = () => {
     );
   });
 
+  const openRouletteModal = () => {
+    setRouletteModalOpen(true);
+  };
+
+  const closeRouletteModal = () => {
+    setRouletteModalOpen(false);
+  };
+
   return (
     <div>
       <NavBar />
       <div className='problem'>
         <div className="filters">
           <Link to="/suggestProblem" className="add-problem-button">Suggest a Problem</Link>
+          <button className="add-problem-button" onClick={openRouletteModal}>
+            Random Problem
+          </button>
           <div className="search-filter-wrapper">
             <input
               type="text"
@@ -112,6 +127,7 @@ const ProblemList = () => {
           ))}
         </ul>
       </div>
+      <ProblemRoulette isOpen={isRouletteModalOpen} onClose={closeRouletteModal} />
     </div>
   );
 };

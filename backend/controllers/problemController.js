@@ -1,5 +1,6 @@
 const Problem = require('../models/problemModel');
 const SuggestedProblem = require('../models/suggestedProblemModel');
+const User = require('../models/userModel');  
 
 const problemController = {
   // Suggest a new problem
@@ -125,6 +126,30 @@ const problemController = {
       res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   },
+
+  // Get a random unsolved problem for the user
+  getRandomUnsolvedProblem: async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const user = await User.findById(userId).populate('solvedProblems');
+      const solvedProblemIds = user.solvedProblems.map(problem => problem._id);
+
+      const unsolvedProblems = await Problem.find({ _id: { $nin: solvedProblemIds } });
+
+      if (unsolvedProblems.length === 0) {
+        return res.status(404).json({ message: 'No unsolved problems available.' });
+      }
+
+      const randomIndex = Math.floor(Math.random() * unsolvedProblems.length);
+      const randomUnsolvedProblem = unsolvedProblems[randomIndex];
+
+      res.status(200).json(randomUnsolvedProblem);
+    } catch (error) {
+      console.error('Error fetching random unsolved problem:', error);
+      res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+  }
+
 };
 
 module.exports = problemController;

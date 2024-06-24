@@ -8,11 +8,13 @@ import Output from './Output';
 import "./CodeEditor.css";
 
 const CodeEditor = ({ problemId, testCases, userId }) => {
+  // Templates for different programming languages
   const languageTemplates = {
     python: `print("Hello, Python!")\n`
   };
 
-  const { token, dispatch } = useContext(AuthContext);  // Ensure you have access to dispatch for token management
+  // Context and state variables
+  const { token, dispatch } = useContext(AuthContext); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [output, setOutput] = useState('');
@@ -21,16 +23,19 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
   const [editorContent, setEditorContent] = useState(languageTemplates[language]);
   const [feedback, setFeedback] = useState('');
 
+  // Update editor content when the language changes
   useEffect(() => {
     setEditorContent(languageTemplates[language]);
   }, [language]);
 
+  // Handle language change
   const handleLanguageChange = (e) => {
     const selectedLanguage = e.target.value;
     setLanguage(selectedLanguage);
     setEditorContent(languageTemplates[selectedLanguage]);
   };
 
+  // Handle code submission
   const handleSubmission = async () => {
     setLoading(true);
     setError('');
@@ -68,7 +73,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
 
         console.log('Submission response:', submissionResponse.data);
 
-        // Assuming the streaks are updated and returned in the response
+        // Check streaks
         console.log("Checking streaks...");
         const streakResponse = await axios.get('/api/checkStreaks', { headers: { Authorization: `${token}` } });
         console.log('Streaks updated:', streakResponse.data);
@@ -88,6 +93,7 @@ const CodeEditor = ({ problemId, testCases, userId }) => {
     }
   };
 
+  // Handle code analysis
   const handleAnalyzeCode = async () => {
     try {
       const response = await axios.post('/api/analyze', {

@@ -1,4 +1,3 @@
-// routes/solutionRoutes.js
 const express = require('express');
 const router = express.Router();
 const Solution = require('../models/solutionModel');
@@ -10,6 +9,7 @@ router.post('/solutions/shareSolution', auth, async (req, res) => {
   const { user } = req;
 
   try {
+    // Create a new solution document
     const newSolution = new Solution({
       problemId,
       userId: user._id,
@@ -17,6 +17,7 @@ router.post('/solutions/shareSolution', auth, async (req, res) => {
       createdAt: new Date()
     });
 
+    // Save the solution to the database
     await newSolution.save();
     res.status(201).json(newSolution);
   } catch (error) {
@@ -24,18 +25,17 @@ router.post('/solutions/shareSolution', auth, async (req, res) => {
   }
 });
 
-// Route to view shared solutions
+// Route to view shared solutions for a specific problem
 router.get('/solutions/:problemId', auth, async (req, res) => {
-    const { problemId } = req.params;
-  
-    try {
-      const solutions = await Solution.find({ problemId }).populate('userId', 'name');
-      res.status(200).json(solutions);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  });
-  
-  
+  const { problemId } = req.params;
+
+  try {
+    // Find solutions for the given problem ID and populate the user information
+    const solutions = await Solution.find({ problemId }).populate('userId', 'name');
+    res.status(200).json(solutions);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 module.exports = router;

@@ -1,0 +1,58 @@
+.admin-hamburger-menu {
+  position:relative;
+  margin:15px;
+}
+
+.admin-hamburger-icon {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.admin-menu {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.admin-menu.open {
+  display: flex;
+}
+
+.admin-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-menu li {
+  margin: 10px 0;
+}
+
+.admin-menu a,
+.admin-menu button {
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.admin-menu a:hover,
+.admin-menu button:hover {
+  text-decoration: underline;
+}
+
+.admin-menu a svg,
+.admin-menu button svg {
+  margin-right: 8px;
+}

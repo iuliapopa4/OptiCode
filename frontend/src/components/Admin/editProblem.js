@@ -2,10 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import './css/editproblems.css'; 
-import NavBar from "../NavBar/NavBar";
+import AdminHamburgerMenu from '../Admin/AdminHamburgerMenu';
 import { AuthContext } from '../../context/AuthContext';
 
 const EditProblem = () => {
+  // Extract problem ID from the URL parameters
   const { id } = useParams();
   const navigate = useNavigate();
   const [problem, setProblem] = useState({});
@@ -24,10 +25,12 @@ const EditProblem = () => {
       .catch(error => console.error('Error fetching problem:', error));
   }, [id, token]);
 
+  // Handle changes in form fields
   const handleFieldChange = (field, value) => {
     setProblem(prevProblem => ({ ...prevProblem, [field]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -48,7 +51,7 @@ const EditProblem = () => {
 
   return (
     <div className="edit-problem">
-      <NavBar />
+      <AdminHamburgerMenu />
       <h1>Edit Problem</h1>
       <form onSubmit={handleSubmit}>
         <div>

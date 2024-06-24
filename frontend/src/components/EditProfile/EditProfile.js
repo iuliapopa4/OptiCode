@@ -18,25 +18,29 @@ const initialState = {
 };
 
 const EditProfile = () => {
-  const inputFile = useRef(null);
-  const [visible, setVisible] = useState(false);
-  const { user, token, dispatch } = useContext(AuthContext);
-  const [avatar, setAvatar] = useState(user.avatar);
-  const [data, setData] = useState(initialState);
+  const inputFile = useRef(null); // Reference to the file input
+  const [visible, setVisible] = useState(false); // State to toggle password visibility
+  const { user, token, dispatch } = useContext(AuthContext); // Context for user and authentication state
+  const [avatar, setAvatar] = useState(user.avatar); // State to store avatar URL
+  const [data, setData] = useState(initialState); // State to store form data
   const { name, password, cf_password } = data;
 
+  // Handle file input click
   const handleInput = () => {
     inputFile.current.click();
   };
 
+  // Toggle password visibility
   const handleClick = () => {
     setVisible(!visible);
   };
 
+  // Handle form field changes
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
+  // Handle avatar change
   const changeAvatar = async (e) => {
     e.preventDefault();
     try {
@@ -67,6 +71,7 @@ const EditProfile = () => {
     }
   };
 
+  // Update user information
   const updateInfo = async () => {
     try {
       const res = await axios.patch(
@@ -95,6 +100,7 @@ const EditProfile = () => {
     }
   };
 
+  // Update user password
   const updatePassword = async () => {
     if (isLength(password))
       return toast("Password must be at least 6 characters.", {
@@ -126,6 +132,7 @@ const EditProfile = () => {
     }
   };
 
+  // Reset form fields
   const handleReset = () => {
     Array.from(document.querySelectorAll("input")).forEach(
       (input) => (input.value = "")
@@ -133,6 +140,7 @@ const EditProfile = () => {
     setData({ ...data, name: "", password: "", cf_password: "" });
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name || avatar) {

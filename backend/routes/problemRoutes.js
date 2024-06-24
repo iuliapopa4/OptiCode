@@ -10,7 +10,7 @@ router.get('/getProblem/:id', problemController.getProblemById);
 router.get('/getProblemByObjectId/:id', problemController.getProblemByObjectId);
 router.get('/totalProblems', problemController.getTotalProblems);
 
-
+router.get('/random-unsolved', auth, problemController.getRandomUnsolvedProblem);
 router.post('/suggestProblem', auth, problemController.suggestProblem);
 
 // Admin routes
